@@ -41,7 +41,7 @@ spring:
     username:
     password:
   r2dbc:
-    url: 'r2dbc:' + ${DATABASE_URL}
+    url: $R2DBC_DATABASE_URL
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   thymeleaf:
