@@ -34,6 +34,7 @@ spring:
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://postgres:Aa123456@localhost:5432/snipptor}
     driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
+    driverClassName: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
     type: ${DATA_SOURCE_TYPE:com.zaxxer.hikari.HikariDataSource}
     username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:Aa123456}
