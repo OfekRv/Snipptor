@@ -33,6 +33,7 @@ spring:
       enabled: false
   datasource:
     url: ${DATABASE_URL}
+    driver-class-name: ${DATABASE_DRIVER_NAME}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   liquibase:
