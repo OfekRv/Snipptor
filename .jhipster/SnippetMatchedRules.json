@@ -1,0 +1,30 @@
+{
+  "applications": ["snipptor"],
+  "changelogDate": "20220329140602",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "snippet_matched_rules",
+  "fields": [],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "SnippetMatchedRules",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "rule",
+      "otherEntityRelationshipName": "snippetMatchedRules",
+      "ownerSide": false,
+      "relationshipName": "rule",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "snippet",
+      "otherEntityRelationshipName": "snippetMatchedRules",
+      "ownerSide": false,
+      "relationshipName": "snippet",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "no"
+}

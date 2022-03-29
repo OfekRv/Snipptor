@@ -1,0 +1,27 @@
+{
+  "snipptorApp": {
+    "snippet": {
+      "home": {
+        "title": "Snippets",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Snippet",
+        "createOrEditLabel": "Create or edit a Snippet",
+        "notFound": "No Snippets found"
+      },
+      "created": "A new Snippet is created with identifier {{ param }}",
+      "updated": "A Snippet is updated with identifier {{ param }}",
+      "deleted": "A Snippet is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Snippet {{ id }}?"
+      },
+      "detail": {
+        "title": "Snippet"
+      },
+      "id": "ID",
+      "hash": "Hash",
+      "content": "Content",
+      "url": "Url",
+      "snippetMatchedRules": "Snippet Matched Rules"
+    }
+  }
+}

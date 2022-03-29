@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity Rule.
+    -->
+    <changeSet id="20220329140302-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="engine_id"
+                                 baseTableName="rule"
+                                 constraintName="fk_rule__engine_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="engine"/>
+
+        <addForeignKeyConstraint baseColumnNames="vulnerability_id"
+                                 baseTableName="rule"
+                                 constraintName="fk_rule__vulnerability_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="vulnerability"/>
+
+        <addForeignKeyConstraint baseColumnNames="rule_id"
+                                 baseTableName="rel_rule__snippet_matched_rules"
+                                 constraintName="fk_rel_rule__snippet_matched_rules__rule_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="rule"/>
+
+        <addForeignKeyConstraint baseColumnNames="snippet_matched_rules_id"
+                                 baseTableName="rel_rule__snippet_matched_rules"
+                                 constraintName="fk_rel_rule__snippet_matched_rules__snippet_matched_rules_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="snippet_matched_rules"/>
+    </changeSet>
+</databaseChangeLog>

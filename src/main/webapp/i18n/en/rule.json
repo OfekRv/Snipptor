@@ -1,0 +1,27 @@
+{
+  "snipptorApp": {
+    "rule": {
+      "home": {
+        "title": "Rules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Rule",
+        "createOrEditLabel": "Create or edit a Rule",
+        "notFound": "No Rules found"
+      },
+      "created": "A new Rule is created with identifier {{ param }}",
+      "updated": "A Rule is updated with identifier {{ param }}",
+      "deleted": "A Rule is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Rule {{ id }}?"
+      },
+      "detail": {
+        "title": "Rule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "engine": "Engine",
+      "vulnerability": "Vulnerability",
+      "snippetMatchedRules": "Snippet Matched Rules"
+    }
+  }
+}

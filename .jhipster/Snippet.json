@@ -1,0 +1,37 @@
+{
+  "applications": ["snipptor"],
+  "changelogDate": "20220329140202",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "snippet",
+  "fields": [
+    {
+      "fieldName": "hash",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "content",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Snippet",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "snippetMatchedRules",
+      "otherEntityRelationshipName": "snippet",
+      "ownerSide": true,
+      "relationshipName": "snippetMatchedRules",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "no"
+}
