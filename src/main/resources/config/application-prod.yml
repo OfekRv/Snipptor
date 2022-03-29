@@ -32,11 +32,11 @@ spring:
     livereload:
       enabled: false
   datasource:
-    url: ${DATABASE_URL}
+    url: ${DATABASE_URL:jdbc:postgresql://postgres:Aa123456@localhost:5432/snipptor}
     driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
     type: ${DATA_SOURCE_TYPE:com.zaxxer.hikari.HikariDataSource}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:Aa123456}
   liquibase:
     contexts: prod
     url: ${JDBC_DATABASE_CONNECTION_URL:jdbc:postgresql://localhost:5432/snipptor}
@@ -47,9 +47,9 @@ spring:
     username:
     password:
   r2dbc:
-    url: ${R2DBC_DATABASE_CONNECTION_URL}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: ${R2DBC_DATABASE_CONNECTION_URL:r2dbc:postgresql://localhost:5432/snipptor}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:Aa123456}
   thymeleaf:
     cache: true
 

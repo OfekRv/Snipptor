@@ -48,9 +48,9 @@ spring:
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/snipptor
-    username: postgres
-    password: Aa123456
+    url: ${R2DBC_DATABASE_CONNECTION_URL:r2dbc:postgresql://localhost:5432/snipptor}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:Aa123456}
   thymeleaf:
     cache: false
 
