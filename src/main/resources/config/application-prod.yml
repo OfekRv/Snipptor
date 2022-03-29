@@ -35,12 +35,8 @@ spring:
     url: ${DATABASE_URL}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximum-pool-size: 10
   liquibase:
     contexts: prod
-    driver: org.postgresql.Driver
     url: ${JDBC_DATABASE_CONNECTION_URL}
   mail:
     host: localhost
