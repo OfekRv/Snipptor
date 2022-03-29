@@ -34,9 +34,6 @@ spring:
     url: ${DATABASE_URL}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximum-pool-size: 10
   liquibase:
     contexts: dev
     url: jdbc:postgresql://localhost:5432/snipptor
