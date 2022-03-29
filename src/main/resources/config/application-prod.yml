@@ -38,7 +38,7 @@ spring:
   liquibase:
     contexts: prod
     url: ${JDBC_DATABASE_CONNECTION_URL}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: ${DATABASE_DRIVER_NAME}
     user: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   mail:
