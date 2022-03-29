@@ -51,6 +51,8 @@ spring:
     url: ${R2DBC_DATABASE_CONNECTION_URL:r2dbc:postgresql://localhost:5432/snipptor}
     username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:Aa123456}
+    properties:
+      sslMode: ${SSL_MODE:DISABLE}
   thymeleaf:
     cache: true
 
