@@ -34,7 +34,7 @@ spring:
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: prod
-    url: $JDBC_DATABASE_CONNECTION_URL
+    url: ${JDBC_DATABASE_CONNECTION_URL}
   mail:
     host: localhost
     port: 25
