@@ -37,6 +37,8 @@ spring:
   liquibase:
     contexts: dev
     url: jdbc:postgresql://localhost:5432/snipptor
+    user: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
   mail:
     host: localhost
     port: 25

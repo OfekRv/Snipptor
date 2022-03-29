@@ -38,6 +38,8 @@ spring:
   liquibase:
     contexts: prod
     url: ${JDBC_DATABASE_CONNECTION_URL}
+    user: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
   mail:
     host: localhost
     port: 25
