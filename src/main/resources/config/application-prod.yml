@@ -34,6 +34,7 @@ spring:
   datasource:
     url: ${DATABASE_URL}
     driver-class-name: ${DATABASE_DRIVER_NAME}
+    type: ${DATA_SOURCE_TYPE}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   liquibase:

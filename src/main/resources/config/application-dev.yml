@@ -32,9 +32,10 @@ spring:
       indent-output: true
   datasource:
     url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
   liquibase:
     contexts: dev
     url: jdbc:postgresql://localhost:5432/snipptor
