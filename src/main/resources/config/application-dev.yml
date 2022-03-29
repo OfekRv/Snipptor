@@ -31,17 +31,15 @@ spring:
     serialization:
       indent-output: true
   datasource:
-    url: ${DATABASE_URL}
-    driver-class-name: org.postgresql.Driver
-    type: com.zaxxer.hikari.HikariDataSource
+    url: ${DATABASE_URL:jdbc:postgresql://postgres:Aa123456@localhost:5432/snipptor}
+    driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
+    type: ${DATA_SOURCE_TYPE:com.zaxxer.hikari.HikariDataSource}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   liquibase:
     contexts: dev
-    url: jdbc:postgresql://localhost:5432/snipptor
-    driver-class-name: org.postgresql.Driver
-    user: postgres
-    password: Aa123456
+    url: ${JDBC_DATABASE_CONNECTION_URL:jdbc:postgresql://localhost:5432/snipptor}
+    driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
   mail:
     host: localhost
     port: 25
