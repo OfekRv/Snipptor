@@ -31,7 +31,13 @@ spring:
       enabled: false
     livereload:
       enabled: false
-  # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 10
   liquibase:
     contexts: prod
     url: ${JDBC_DATABASE_CONNECTION_URL}

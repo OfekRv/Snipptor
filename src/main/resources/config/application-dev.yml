@@ -30,9 +30,15 @@ spring:
   jackson:
     serialization:
       indent-output: true
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 10
   liquibase:
-    # Remove 'faker' if you do not want the sample data to be loaded automatically
-    contexts: dev, faker
+    contexts: dev
     url: jdbc:postgresql://localhost:5432/snipptor
   mail:
     host: localhost
