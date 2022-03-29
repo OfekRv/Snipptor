@@ -41,7 +41,7 @@ spring:
     username:
     password:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/snipptor
+    url: ${DATABASE_URL}
     username: snipptor
     password:
   thymeleaf:
