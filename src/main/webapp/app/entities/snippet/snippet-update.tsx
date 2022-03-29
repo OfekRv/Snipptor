@@ -27,11 +27,8 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
   };
 
   useEffect(() => {
-    if (isNew) {
-      dispatch(reset());
-    } else {
-      dispatch(getEntity(props.match.params.id));
-    }
+    dispatch(reset());
+
 
     dispatch(getSnippetMatchedRules({}));
   }, []);
@@ -79,17 +76,6 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="snippet-id"
-                  label={translate('global.field.id')}
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" />
               <ValidatedField
                 label={translate('snipptorApp.snippet.content')}
                 id="snippet-content"
@@ -101,23 +87,6 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 }}
               />
               <ValidatedField label={translate('snipptorApp.snippet.url')} id="snippet-url" name="url" data-cy="url" type="text" />
-              <ValidatedField
-                label={translate('snipptorApp.snippet.snippetMatchedRules')}
-                id="snippet-snippetMatchedRules"
-                data-cy="snippetMatchedRules"
-                type="select"
-                multiple
-                name="snippetMatchedRules"
-              >
-                <option value="" key="0" />
-                {snippetMatchedRules
-                  ? snippetMatchedRules.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/snippet" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

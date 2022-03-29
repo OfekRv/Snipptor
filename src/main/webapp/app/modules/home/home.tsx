@@ -14,7 +14,7 @@ export const Home = () => {
     <Row>
       <Col md="9">
         <h2>
-          <Translate contentKey="home.title">Welcome, snippet vulnerability hunter!</Translate>
+          Welcome, snippet vulnerability hunter!
         </h2>
         {account?.login ? (
           <div>
