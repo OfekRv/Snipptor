@@ -52,7 +52,7 @@ spring:
     username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:Aa123456}
     properties:
-      sslMode: ${SSL_MODE:DISABLE}
+      sslMode: ${SSL_MODE:Disable}
   thymeleaf:
     cache: true
 
