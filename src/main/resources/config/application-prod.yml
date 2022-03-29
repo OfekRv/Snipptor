@@ -40,7 +40,7 @@ spring:
     password: ${DATABASE_PASSWORD:Aa123456}
   liquibase:
     contexts: prod
-    url: ${JDBC_DATABASE_CONNECTION_URL:jdbc:postgresql://localhost:5432/snipptor}
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/snipptor}
     driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
   mail:
     host: localhost
