@@ -111,6 +111,7 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   required: { value: true, message: translate('entity.validation.required') },
                 }}
               />
+              <ValidatedField label={translate('snipptorApp.rule.raw')} id="rule-raw" name="raw" data-cy="raw" type="textarea" />
               <ValidatedField id="rule-engine" name="engine" data-cy="engine" label={translate('snipptorApp.rule.engine')} type="select">
                 <option value="" key="0" />
                 {engines

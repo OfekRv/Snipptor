@@ -159,6 +159,9 @@ public class RuleResource {
                         if (rule.getName() != null) {
                             existingRule.setName(rule.getName());
                         }
+                        if (rule.getRaw() != null) {
+                            existingRule.setRaw(rule.getRaw());
+                        }
 
                         return existingRule;
                     })

@@ -106,6 +106,9 @@ export const Engine = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('name')}>
                   <Translate contentKey="snipptorApp.engine.name">Name</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('url')}>
+                  <Translate contentKey="snipptorApp.engine.url">Url</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th />
               </tr>
             </thead>
@@ -118,6 +121,7 @@ export const Engine = (props: RouteComponentProps<{ url: string }>) => {
                     </Button>
                   </td>
                   <td>{engine.name}</td>
+                  <td>{engine.url}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${engine.id}`} color="info" size="sm" data-cy="entityDetailsButton">

@@ -9,6 +9,11 @@
       "fieldName": "name",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "raw",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
     }
   ],
   "fluentMethods": true,

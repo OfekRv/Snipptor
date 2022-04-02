@@ -92,6 +92,16 @@ export const EngineUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   required: { value: true, message: translate('entity.validation.required') },
                 }}
               />
+              <ValidatedField
+                label={translate('snipptorApp.engine.url')}
+                id="engine-url"
+                name="url"
+                data-cy="url"
+                type="text"
+                validate={{
+                  required: { value: true, message: translate('entity.validation.required') },
+                }}
+              />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/engine" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

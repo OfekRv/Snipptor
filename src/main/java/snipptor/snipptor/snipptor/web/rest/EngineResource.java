@@ -159,6 +159,9 @@ public class EngineResource {
                         if (engine.getName() != null) {
                             existingEngine.setName(engine.getName());
                         }
+                        if (engine.getUrl() != null) {
+                            existingEngine.setUrl(engine.getUrl());
+                        }
 
                         return existingEngine;
                     })

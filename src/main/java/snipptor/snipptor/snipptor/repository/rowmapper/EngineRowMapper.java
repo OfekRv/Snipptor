@@ -26,6 +26,7 @@ public class EngineRowMapper implements BiFunction<Row, String, Engine> {
         Engine entity = new Engine();
         entity.setId(converter.fromRow(row, prefix + "_id", Long.class));
         entity.setName(converter.fromRow(row, prefix + "_name", String.class));
+        entity.setUrl(converter.fromRow(row, prefix + "_url", String.class));
         return entity;
     }
 }

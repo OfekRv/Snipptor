@@ -23,6 +23,10 @@ public class Engine implements Serializable {
     @Column("name")
     private String name;
 
+    @NotNull(message = "must not be null")
+    @Column("url")
+    private String url;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -51,6 +55,19 @@ public class Engine implements Serializable {
         this.name = name;
     }
 
+    public String getUrl() {
+        return this.url;
+    }
+
+    public Engine url(String url) {
+        this.setUrl(url);
+        return this;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -76,6 +93,7 @@ public class Engine implements Serializable {
         return "Engine{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", url='" + getUrl() + "'" +
             "}";
     }
 }

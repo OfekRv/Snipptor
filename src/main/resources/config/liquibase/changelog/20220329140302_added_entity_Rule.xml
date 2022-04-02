@@ -17,6 +17,9 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="raw" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
             <column name="engine_id" type="bigint">
                 <constraints nullable="true" unique="true" uniqueConstraintName="ux_rule__engine_id" />
             </column>
@@ -59,6 +62,7 @@
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="name" type="string"/>
+            <column name="raw" type="clob"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

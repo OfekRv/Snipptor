@@ -26,6 +26,7 @@ public class RuleRowMapper implements BiFunction<Row, String, Rule> {
         Rule entity = new Rule();
         entity.setId(converter.fromRow(row, prefix + "_id", Long.class));
         entity.setName(converter.fromRow(row, prefix + "_name", String.class));
+        entity.setRaw(converter.fromRow(row, prefix + "_raw", String.class));
         entity.setEngineId(converter.fromRow(row, prefix + "_engine_id", Long.class));
         entity.setVulnerabilityId(converter.fromRow(row, prefix + "_vulnerability_id", Long.class));
         return entity;

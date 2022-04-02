@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { byteSize, Translate, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getEntities } from './rule.reducer';
@@ -106,6 +106,9 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('name')}>
                   <Translate contentKey="snipptorApp.rule.name">Name</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('raw')}>
+                  <Translate contentKey="snipptorApp.rule.raw">Raw</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th>
                   <Translate contentKey="snipptorApp.rule.engine">Engine</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
@@ -124,6 +127,7 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
                     </Button>
                   </td>
                   <td>{rule.name}</td>
+                  <td>{rule.raw}</td>
                   <td>{rule.engine ? <Link to={`engine/${rule.engine.id}`}>{rule.engine.id}</Link> : ''}</td>
                   <td>{rule.vulnerability ? <Link to={`vulnerability/${rule.vulnerability.id}`}>{rule.vulnerability.id}</Link> : ''}</td>
                   <td className="text-end">
