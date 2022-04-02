@@ -1,0 +1,11 @@
+{
+  "snipptorApp": {
+    "SnippetClassification": {
+      "null": "",
+      "UNKNOWN": "Unknown",
+      "SAFE": "Safe",
+      "MALICIOUS": "Malicious",
+      "VULNERABLE": "Vulnerable"
+    }
+  }
+}
