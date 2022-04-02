@@ -157,32 +157,6 @@ class EngineResourceIT {
     }
 
     @Test
-    void getAllEnginesAsStream() {
-        // Initialize the database
-        engineRepository.save(engine).block();
-
-        List<Engine> engineList = webTestClient
-            .get()
-            .uri(ENTITY_API_URL)
-            .accept(MediaType.APPLICATION_NDJSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
-            .returnResult(Engine.class)
-            .getResponseBody()
-            .filter(engine::equals)
-            .collectList()
-            .block(Duration.ofSeconds(5));
-
-        assertThat(engineList).isNotNull();
-        assertThat(engineList).hasSize(1);
-        Engine testEngine = engineList.get(0);
-        assertThat(testEngine.getName()).isEqualTo(DEFAULT_NAME);
-    }
-
-    @Test
     void getAllEngines() {
         // Initialize the database
         engineRepository.save(engine).block();

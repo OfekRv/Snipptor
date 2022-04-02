@@ -14,7 +14,7 @@
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Engine",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [],
   "service": "no"

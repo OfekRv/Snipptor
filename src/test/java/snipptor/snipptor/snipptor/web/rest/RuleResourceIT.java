@@ -168,32 +168,6 @@ class RuleResourceIT {
     }
 
     @Test
-    void getAllRulesAsStream() {
-        // Initialize the database
-        ruleRepository.save(rule).block();
-
-        List<Rule> ruleList = webTestClient
-            .get()
-            .uri(ENTITY_API_URL)
-            .accept(MediaType.APPLICATION_NDJSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
-            .returnResult(Rule.class)
-            .getResponseBody()
-            .filter(rule::equals)
-            .collectList()
-            .block(Duration.ofSeconds(5));
-
-        assertThat(ruleList).isNotNull();
-        assertThat(ruleList).hasSize(1);
-        Rule testRule = ruleList.get(0);
-        assertThat(testRule.getName()).isEqualTo(DEFAULT_NAME);
-    }
-
-    @Test
     void getAllRules() {
         // Initialize the database
         ruleRepository.save(rule).block();

@@ -14,7 +14,7 @@
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Rule",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [
     {

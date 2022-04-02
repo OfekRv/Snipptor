@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getEntity } from './snippet.reducer';
@@ -47,6 +47,18 @@ export const SnippetDetail = (props: RouteComponentProps<{ id: string }>) => {
             </span>
           </dt>
           <dd>{snippetEntity.url}</dd>
+          <dt>
+            <span id="classification">
+              <Translate contentKey="snipptorApp.snippet.classification">Classification</Translate>
+            </span>
+          </dt>
+          <dd>{snippetEntity.classification}</dd>
+          <dt>
+            <span id="scanCount">
+              <Translate contentKey="snipptorApp.snippet.scanCount">Scan Count</Translate>
+            </span>
+          </dt>
+          <dd>{snippetEntity.scanCount}</dd>
           <dt>
             <Translate contentKey="snipptorApp.snippet.snippetMatchedRules">Snippet Matched Rules</Translate>
           </dt>

@@ -29,7 +29,7 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
   const updating = useAppSelector(state => state.rule.updating);
   const updateSuccess = useAppSelector(state => state.rule.updateSuccess);
   const handleClose = () => {
-    props.history.push('/rule');
+    props.history.push('/rule' + props.location.search);
   };
 
   useEffect(() => {

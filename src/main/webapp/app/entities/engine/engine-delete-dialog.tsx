@@ -20,7 +20,7 @@ export const EngineDeleteDialog = (props: RouteComponentProps<{ id: string }>) =
   const updateSuccess = useAppSelector(state => state.engine.updateSuccess);
 
   const handleClose = () => {
-    props.history.push('/engine');
+    props.history.push('/engine' + props.location.search);
   };
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 
 /**
  * A Snippet.
@@ -25,12 +26,17 @@ public class Snippet implements Serializable {
     @Column("hash")
     private String hash;
 
-    @NotNull(message = "must not be null")
     @Column("content")
     private String content;
 
     @Column("url")
     private String url;
+
+    @Column("classification")
+    private SnippetClassification classification;
+
+    @Column("scan_count")
+    private Long scanCount;
 
     @Transient
     @JsonIgnoreProperties(value = { "rules", "snippets" }, allowSetters = true)
@@ -90,6 +96,32 @@ public class Snippet implements Serializable {
         this.url = url;
     }
 
+    public SnippetClassification getClassification() {
+        return this.classification;
+    }
+
+    public Snippet classification(SnippetClassification classification) {
+        this.setClassification(classification);
+        return this;
+    }
+
+    public void setClassification(SnippetClassification classification) {
+        this.classification = classification;
+    }
+
+    public Long getScanCount() {
+        return this.scanCount;
+    }
+
+    public Snippet scanCount(Long scanCount) {
+        this.setScanCount(scanCount);
+        return this;
+    }
+
+    public void setScanCount(Long scanCount) {
+        this.scanCount = scanCount;
+    }
+
     public Set<SnippetMatchedRules> getSnippetMatchedRules() {
         return this.snippetMatchedRules;
     }
@@ -142,6 +174,8 @@ public class Snippet implements Serializable {
             ", hash='" + getHash() + "'" +
             ", content='" + getContent() + "'" +
             ", url='" + getUrl() + "'" +
+            ", classification='" + getClassification() + "'" +
+            ", scanCount=" + getScanCount() +
             "}";
     }
 }

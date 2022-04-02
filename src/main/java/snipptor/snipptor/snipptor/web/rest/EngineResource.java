@@ -2,6 +2,7 @@ package snipptor.snipptor.snipptor.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,18 +11,25 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.domain.Engine;
 import snipptor.snipptor.snipptor.repository.EngineRepository;
 import snipptor.snipptor.snipptor.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.reactive.ResponseUtil;
 
 /**
@@ -170,22 +178,30 @@ public class EngineResource {
     /**
      * {@code GET  /engines} : get all the engines.
      *
+     * @param pageable the pagination information.
+     * @param request a {@link ServerHttpRequest} request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of engines in body.
      */
     @GetMapping("/engines")
-    public Mono<List<Engine>> getAllEngines() {
-        log.debug("REST request to get all Engines");
-        return engineRepository.findAll().collectList();
-    }
-
-    /**
-     * {@code GET  /engines} : get all the engines as a stream.
-     * @return the {@link Flux} of engines.
-     */
-    @GetMapping(value = "/engines", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Flux<Engine> getAllEnginesAsStream() {
-        log.debug("REST request to get all Engines as a stream");
-        return engineRepository.findAll();
+    public Mono<ResponseEntity<List<Engine>>> getAllEngines(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        ServerHttpRequest request
+    ) {
+        log.debug("REST request to get a page of Engines");
+        return engineRepository
+            .count()
+            .zipWith(engineRepository.findAllBy(pageable).collectList())
+            .map(countWithEntities ->
+                ResponseEntity
+                    .ok()
+                    .headers(
+                        PaginationUtil.generatePaginationHttpHeaders(
+                            UriComponentsBuilder.fromHttpRequest(request),
+                            new PageImpl<>(countWithEntities.getT2(), pageable, countWithEntities.getT1())
+                        )
+                    )
+                    .body(countWithEntities.getT2())
+            );
     }
 
     /**

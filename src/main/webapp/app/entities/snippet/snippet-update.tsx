@@ -11,6 +11,7 @@ import { ISnippet } from 'app/shared/model/snippet.model';
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { SnippetClassification } from 'app/shared/model/enumerations/snippet-classification.model';
 
 export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
   const dispatch = useAppDispatch();
@@ -22,13 +23,17 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
   const loading = useAppSelector(state => state.snippet.loading);
   const updating = useAppSelector(state => state.snippet.updating);
   const updateSuccess = useAppSelector(state => state.snippet.updateSuccess);
+  const snippetClassificationValues = Object.keys(SnippetClassification);
   const handleClose = () => {
-    props.history.push('/snippet');
+    props.history.push('/snippet' + props.location.search);
   };
 
   useEffect(() => {
-    dispatch(reset());
-
+    if (isNew) {
+      dispatch(reset());
+    } else {
+      dispatch(getEntity(props.match.params.id));
+    }
 
     dispatch(getSnippetMatchedRules({}));
   }, []);
@@ -57,6 +62,7 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
     isNew
       ? {}
       : {
+          classification: 'UNKNOWN',
           ...snippetEntity,
           snippetMatchedRules: snippetEntity?.snippetMatchedRules?.map(e => e.id.toString()),
         };
@@ -76,17 +82,65 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+              {!isNew ? (
+                <ValidatedField
+                  name="id"
+                  required
+                  readOnly
+                  id="snippet-id"
+                  label={translate('global.field.id')}
+                  validate={{ required: true }}
+                />
+              ) : null}
+              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" />
               <ValidatedField
                 label={translate('snipptorApp.snippet.content')}
                 id="snippet-content"
                 name="content"
                 data-cy="content"
-                type="text"
+                type="textarea"
                 validate={{
                   required: { value: true, message: translate('entity.validation.required') },
                 }}
               />
               <ValidatedField label={translate('snipptorApp.snippet.url')} id="snippet-url" name="url" data-cy="url" type="text" />
+              <ValidatedField
+                label={translate('snipptorApp.snippet.classification')}
+                id="snippet-classification"
+                name="classification"
+                data-cy="classification"
+                type="select"
+              >
+                {snippetClassificationValues.map(snippetClassification => (
+                  <option value={snippetClassification} key={snippetClassification}>
+                    {translate('snipptorApp.SnippetClassification.' + snippetClassification)}
+                  </option>
+                ))}
+              </ValidatedField>
+              <ValidatedField
+                label={translate('snipptorApp.snippet.scanCount')}
+                id="snippet-scanCount"
+                name="scanCount"
+                data-cy="scanCount"
+                type="text"
+              />
+              <ValidatedField
+                label={translate('snipptorApp.snippet.snippetMatchedRules')}
+                id="snippet-snippetMatchedRules"
+                data-cy="snippetMatchedRules"
+                type="select"
+                multiple
+                name="snippetMatchedRules"
+              >
+                <option value="" key="0" />
+                {snippetMatchedRules
+                  ? snippetMatchedRules.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.id}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/snippet" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
