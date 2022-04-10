@@ -2,7 +2,6 @@ package snipptor.snipptor.snipptor.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,25 +10,18 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.domain.Rule;
 import snipptor.snipptor.snipptor.repository.RuleRepository;
 import snipptor.snipptor.snipptor.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
-import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.reactive.ResponseUtil;
 
 /**
@@ -159,9 +151,6 @@ public class RuleResource {
                         if (rule.getName() != null) {
                             existingRule.setName(rule.getName());
                         }
-                        if (rule.getRaw() != null) {
-                            existingRule.setRaw(rule.getRaw());
-                        }
 
                         return existingRule;
                     })
@@ -181,32 +170,23 @@ public class RuleResource {
     /**
      * {@code GET  /rules} : get all the rules.
      *
-     * @param pageable the pagination information.
-     * @param request a {@link ServerHttpRequest} request.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of rules in body.
      */
     @GetMapping("/rules")
-    public Mono<ResponseEntity<List<Rule>>> getAllRules(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        ServerHttpRequest request,
-        @RequestParam(required = false, defaultValue = "true") boolean eagerload
-    ) {
-        log.debug("REST request to get a page of Rules");
-        return ruleRepository
-            .count()
-            .zipWith(ruleRepository.findAllBy(pageable).collectList())
-            .map(countWithEntities ->
-                ResponseEntity
-                    .ok()
-                    .headers(
-                        PaginationUtil.generatePaginationHttpHeaders(
-                            UriComponentsBuilder.fromHttpRequest(request),
-                            new PageImpl<>(countWithEntities.getT2(), pageable, countWithEntities.getT1())
-                        )
-                    )
-                    .body(countWithEntities.getT2())
-            );
+    public Mono<List<Rule>> getAllRules(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+        log.debug("REST request to get all Rules");
+        return ruleRepository.findAllWithEagerRelationships().collectList();
+    }
+
+    /**
+     * {@code GET  /rules} : get all the rules as a stream.
+     * @return the {@link Flux} of rules.
+     */
+    @GetMapping(value = "/rules", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<Rule> getAllRulesAsStream() {
+        log.debug("REST request to get all Rules as a stream");
+        return ruleRepository.findAll();
     }
 
     /**

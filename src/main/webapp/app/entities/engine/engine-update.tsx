@@ -20,7 +20,7 @@ export const EngineUpdate = (props: RouteComponentProps<{ id: string }>) => {
   const updating = useAppSelector(state => state.engine.updating);
   const updateSuccess = useAppSelector(state => state.engine.updateSuccess);
   const handleClose = () => {
-    props.history.push('/engine' + props.location.search);
+    props.history.push('/engine');
   };
 
   useEffect(() => {
@@ -87,16 +87,6 @@ export const EngineUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 id="engine-name"
                 name="name"
                 data-cy="name"
-                type="text"
-                validate={{
-                  required: { value: true, message: translate('entity.validation.required') },
-                }}
-              />
-              <ValidatedField
-                label={translate('snipptorApp.engine.url')}
-                id="engine-url"
-                name="url"
-                data-cy="url"
                 type="text"
                 validate={{
                   required: { value: true, message: translate('entity.validation.required') },

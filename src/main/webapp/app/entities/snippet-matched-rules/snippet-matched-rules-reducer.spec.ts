@@ -4,7 +4,15 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import reducer, { getEntities, getEntity, reset } from './snippet-matched-rules.reducer';
+import reducer, {
+  createEntity,
+  deleteEntity,
+  getEntities,
+  getEntity,
+  updateEntity,
+  partialUpdateEntity,
+  reset,
+} from './snippet-matched-rules.reducer';
 import { EntityState } from 'app/shared/reducers/reducer.utils';
 import { ISnippetMatchedRules, defaultValue } from 'app/shared/model/snippet-matched-rules.model';
 
@@ -22,7 +30,6 @@ describe('Entities reducer tests', () => {
     errorMessage: null,
     entities: [],
     entity: defaultValue,
-    totalItems: 0,
     updating: false,
     updateSuccess: false,
   };
@@ -61,6 +68,20 @@ describe('Entities reducer tests', () => {
       });
     });
 
+    it('should set state to updating', () => {
+      testMultipleTypes(
+        [createEntity.pending.type, updateEntity.pending.type, partialUpdateEntity.pending.type, deleteEntity.pending.type],
+        {},
+        state => {
+          expect(state).toMatchObject({
+            errorMessage: null,
+            updateSuccess: false,
+            updating: true,
+          });
+        }
+      );
+    });
+
     it('should reset the state', () => {
       expect(reducer({ ...initialState, loading: true }, reset())).toEqual({
         ...initialState,
@@ -71,7 +92,14 @@ describe('Entities reducer tests', () => {
   describe('Failures', () => {
     it('should set a message in errorMessage', () => {
       testMultipleTypes(
-        [getEntities.rejected.type, getEntity.rejected.type],
+        [
+          getEntities.rejected.type,
+          getEntity.rejected.type,
+          createEntity.rejected.type,
+          updateEntity.rejected.type,
+          partialUpdateEntity.rejected.type,
+          deleteEntity.rejected.type,
+        ],
         'some message',
         state => {
           expect(state).toMatchObject({
@@ -89,7 +117,7 @@ describe('Entities reducer tests', () => {
 
   describe('Successes', () => {
     it('should fetch all entities', () => {
-      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }], headers: { 'x-total-count': 123 } };
+      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }] };
       expect(
         reducer(undefined, {
           type: getEntities.fulfilled.type,
@@ -98,7 +126,6 @@ describe('Entities reducer tests', () => {
       ).toEqual({
         ...initialState,
         loading: false,
-        totalItems: payload.headers['x-total-count'],
         entities: payload.data,
       });
     });
@@ -114,6 +141,33 @@ describe('Entities reducer tests', () => {
         ...initialState,
         loading: false,
         entity: payload.data,
+      });
+    });
+
+    it('should create/update entity', () => {
+      const payload = { data: 'fake payload' };
+      expect(
+        reducer(undefined, {
+          type: createEntity.fulfilled.type,
+          payload,
+        })
+      ).toEqual({
+        ...initialState,
+        updating: false,
+        updateSuccess: true,
+        entity: payload.data,
+      });
+    });
+
+    it('should delete entity', () => {
+      const payload = 'fake payload';
+      const toTest = reducer(undefined, {
+        type: deleteEntity.fulfilled.type,
+        payload,
+      });
+      expect(toTest).toMatchObject({
+        updating: false,
+        updateSuccess: true,
       });
     });
   });
@@ -160,6 +214,82 @@ describe('Entities reducer tests', () => {
       await store.dispatch(getEntity(42666));
       expect(store.getActions()[0]).toMatchObject(expectedActions[0]);
       expect(store.getActions()[1]).toMatchObject(expectedActions[1]);
+    });
+
+    it('dispatches CREATE_SNIPPETMATCHEDRULES actions', async () => {
+      const expectedActions = [
+        {
+          type: createEntity.pending.type,
+        },
+        {
+          type: getEntities.pending.type,
+        },
+        {
+          type: createEntity.fulfilled.type,
+          payload: resolvedObject,
+        },
+      ];
+      await store.dispatch(createEntity({ id: 456 }));
+      expect(store.getActions()[0]).toMatchObject(expectedActions[0]);
+      expect(store.getActions()[1]).toMatchObject(expectedActions[1]);
+      expect(store.getActions()[2]).toMatchObject(expectedActions[2]);
+    });
+
+    it('dispatches UPDATE_SNIPPETMATCHEDRULES actions', async () => {
+      const expectedActions = [
+        {
+          type: updateEntity.pending.type,
+        },
+        {
+          type: getEntities.pending.type,
+        },
+        {
+          type: updateEntity.fulfilled.type,
+          payload: resolvedObject,
+        },
+      ];
+      await store.dispatch(updateEntity({ id: 456 }));
+      expect(store.getActions()[0]).toMatchObject(expectedActions[0]);
+      expect(store.getActions()[1]).toMatchObject(expectedActions[1]);
+      expect(store.getActions()[2]).toMatchObject(expectedActions[2]);
+    });
+
+    it('dispatches PARTIAL_UPDATE_SNIPPETMATCHEDRULES actions', async () => {
+      const expectedActions = [
+        {
+          type: partialUpdateEntity.pending.type,
+        },
+        {
+          type: getEntities.pending.type,
+        },
+        {
+          type: partialUpdateEntity.fulfilled.type,
+          payload: resolvedObject,
+        },
+      ];
+      await store.dispatch(partialUpdateEntity({ id: 123 }));
+      expect(store.getActions()[0]).toMatchObject(expectedActions[0]);
+      expect(store.getActions()[1]).toMatchObject(expectedActions[1]);
+      expect(store.getActions()[2]).toMatchObject(expectedActions[2]);
+    });
+
+    it('dispatches DELETE_SNIPPETMATCHEDRULES actions', async () => {
+      const expectedActions = [
+        {
+          type: deleteEntity.pending.type,
+        },
+        {
+          type: getEntities.pending.type,
+        },
+        {
+          type: deleteEntity.fulfilled.type,
+          payload: resolvedObject,
+        },
+      ];
+      await store.dispatch(deleteEntity(42666));
+      expect(store.getActions()[0]).toMatchObject(expectedActions[0]);
+      expect(store.getActions()[1]).toMatchObject(expectedActions[1]);
+      expect(store.getActions()[2]).toMatchObject(expectedActions[2]);
     });
 
     it('dispatches RESET actions', async () => {

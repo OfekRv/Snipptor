@@ -91,6 +91,72 @@ class SnippetMatchedRulesResourceIT {
     }
 
     @Test
+    void createSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeCreate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        // Create the SnippetMatchedRules
+        webTestClient
+            .post()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isCreated();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeCreate + 1);
+        SnippetMatchedRules testSnippetMatchedRules = snippetMatchedRulesList.get(snippetMatchedRulesList.size() - 1);
+    }
+
+    @Test
+    void createSnippetMatchedRulesWithExistingId() throws Exception {
+        // Create the SnippetMatchedRules with an existing ID
+        snippetMatchedRules.setId(1L);
+
+        int databaseSizeBeforeCreate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+
+        // An entity with an existing ID cannot be created, so this API call must fail
+        webTestClient
+            .post()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeCreate);
+    }
+
+    @Test
+    void getAllSnippetMatchedRulesAsStream() {
+        // Initialize the database
+        snippetMatchedRulesRepository.save(snippetMatchedRules).block();
+
+        List<SnippetMatchedRules> snippetMatchedRulesList = webTestClient
+            .get()
+            .uri(ENTITY_API_URL)
+            .accept(MediaType.APPLICATION_NDJSON)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectHeader()
+            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
+            .returnResult(SnippetMatchedRules.class)
+            .getResponseBody()
+            .filter(snippetMatchedRules::equals)
+            .collectList()
+            .block(Duration.ofSeconds(5));
+
+        assertThat(snippetMatchedRulesList).isNotNull();
+        assertThat(snippetMatchedRulesList).hasSize(1);
+        SnippetMatchedRules testSnippetMatchedRules = snippetMatchedRulesList.get(0);
+    }
+
+    @Test
     void getAllSnippetMatchedRules() {
         // Initialize the database
         snippetMatchedRulesRepository.save(snippetMatchedRules).block();
@@ -140,5 +206,223 @@ class SnippetMatchedRulesResourceIT {
             .exchange()
             .expectStatus()
             .isNotFound();
+    }
+
+    @Test
+    void putNewSnippetMatchedRules() throws Exception {
+        // Initialize the database
+        snippetMatchedRulesRepository.save(snippetMatchedRules).block();
+
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+
+        // Update the snippetMatchedRules
+        SnippetMatchedRules updatedSnippetMatchedRules = snippetMatchedRulesRepository.findById(snippetMatchedRules.getId()).block();
+
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, updatedSnippetMatchedRules.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(updatedSnippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isOk();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+        SnippetMatchedRules testSnippetMatchedRules = snippetMatchedRulesList.get(snippetMatchedRulesList.size() - 1);
+    }
+
+    @Test
+    void putNonExistingSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, snippetMatchedRules.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithIdMismatchSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, count.incrementAndGet())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithMissingIdPathParamSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void partialUpdateSnippetMatchedRulesWithPatch() throws Exception {
+        // Initialize the database
+        snippetMatchedRulesRepository.save(snippetMatchedRules).block();
+
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+
+        // Update the snippetMatchedRules using partial update
+        SnippetMatchedRules partialUpdatedSnippetMatchedRules = new SnippetMatchedRules();
+        partialUpdatedSnippetMatchedRules.setId(snippetMatchedRules.getId());
+
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, partialUpdatedSnippetMatchedRules.getId())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedSnippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isOk();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+        SnippetMatchedRules testSnippetMatchedRules = snippetMatchedRulesList.get(snippetMatchedRulesList.size() - 1);
+    }
+
+    @Test
+    void fullUpdateSnippetMatchedRulesWithPatch() throws Exception {
+        // Initialize the database
+        snippetMatchedRulesRepository.save(snippetMatchedRules).block();
+
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+
+        // Update the snippetMatchedRules using partial update
+        SnippetMatchedRules partialUpdatedSnippetMatchedRules = new SnippetMatchedRules();
+        partialUpdatedSnippetMatchedRules.setId(snippetMatchedRules.getId());
+
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, partialUpdatedSnippetMatchedRules.getId())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedSnippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isOk();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+        SnippetMatchedRules testSnippetMatchedRules = snippetMatchedRulesList.get(snippetMatchedRulesList.size() - 1);
+    }
+
+    @Test
+    void patchNonExistingSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, snippetMatchedRules.getId())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithIdMismatchSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, count.incrementAndGet())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithMissingIdPathParamSnippetMatchedRules() throws Exception {
+        int databaseSizeBeforeUpdate = snippetMatchedRulesRepository.findAll().collectList().block().size();
+        snippetMatchedRules.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(snippetMatchedRules))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the SnippetMatchedRules in the database
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void deleteSnippetMatchedRules() {
+        // Initialize the database
+        snippetMatchedRulesRepository.save(snippetMatchedRules).block();
+
+        int databaseSizeBeforeDelete = snippetMatchedRulesRepository.findAll().collectList().block().size();
+
+        // Delete the snippetMatchedRules
+        webTestClient
+            .delete()
+            .uri(ENTITY_API_URL_ID, snippetMatchedRules.getId())
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isNoContent();
+
+        // Validate the database contains one less item
+        List<SnippetMatchedRules> snippetMatchedRulesList = snippetMatchedRulesRepository.findAll().collectList().block();
+        assertThat(snippetMatchedRulesList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

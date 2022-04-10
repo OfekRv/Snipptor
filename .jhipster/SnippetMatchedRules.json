@@ -8,8 +8,8 @@
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "SnippetMatchedRules",
-  "pagination": "pagination",
-  "readOnly": true,
+  "pagination": "no",
+  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "rule",

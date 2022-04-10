@@ -4,7 +4,15 @@
       "home": {
         "title": "Snippet Matched Rules",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Snippet Matched Rules",
+        "createOrEditLabel": "Create or edit a Snippet Matched Rules",
         "notFound": "No Snippet Matched Rules found"
+      },
+      "created": "A new Snippet Matched Rules is created with identifier {{ param }}",
+      "updated": "A Snippet Matched Rules is updated with identifier {{ param }}",
+      "deleted": "A Snippet Matched Rules is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Snippet Matched Rules {{ id }}?"
       },
       "detail": {
         "title": "Snippet Matched Rules"

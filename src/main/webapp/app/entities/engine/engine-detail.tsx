@@ -35,12 +35,6 @@ export const EngineDetail = (props: RouteComponentProps<{ id: string }>) => {
             </span>
           </dt>
           <dd>{engineEntity.name}</dd>
-          <dt>
-            <span id="url">
-              <Translate contentKey="snipptorApp.engine.url">Url</Translate>
-            </span>
-          </dt>
-          <dd>{engineEntity.url}</dd>
         </dl>
         <Button tag={Link} to="/engine" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

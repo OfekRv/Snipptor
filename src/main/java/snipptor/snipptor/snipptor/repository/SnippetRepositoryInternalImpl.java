@@ -29,7 +29,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.domain.Snippet;
 import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
-import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 import snipptor.snipptor.snipptor.repository.rowmapper.SnippetRowMapper;
 
 /**

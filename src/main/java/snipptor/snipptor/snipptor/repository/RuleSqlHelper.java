@@ -12,7 +12,6 @@ public class RuleSqlHelper {
         List<Expression> columns = new ArrayList<>();
         columns.add(Column.aliased("id", table, columnPrefix + "_id"));
         columns.add(Column.aliased("name", table, columnPrefix + "_name"));
-        columns.add(Column.aliased("raw", table, columnPrefix + "_raw"));
 
         columns.add(Column.aliased("engine_id", table, columnPrefix + "_engine_id"));
         columns.add(Column.aliased("vulnerability_id", table, columnPrefix + "_vulnerability_id"));

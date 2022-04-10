@@ -11,7 +11,6 @@ const initialState: EntityState<IEngine> = {
   entities: [],
   entity: defaultValue,
   updating: false,
-  totalItems: 0,
   updateSuccess: false,
 };
 
@@ -20,7 +19,7 @@ const apiUrl = 'api/engines';
 // Actions
 
 export const getEntities = createAsyncThunk('engine/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
+  const requestUrl = `${apiUrl}?cacheBuster=${new Date().getTime()}`;
   return axios.get<IEngine[]>(requestUrl);
 });
 
@@ -91,13 +90,12 @@ export const EngineSlice = createEntitySlice({
         state.entity = {};
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
-        const { data, headers } = action.payload;
+        const { data } = action.payload;
 
         return {
           ...state,
           loading: false,
           entities: data,
-          totalItems: parseInt(headers['x-total-count'], 10),
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {

@@ -15,8 +15,6 @@ import snipptor.snipptor.snipptor.domain.Rule;
 @SuppressWarnings("unused")
 @Repository
 public interface RuleRepository extends ReactiveCrudRepository<Rule, Long>, RuleRepositoryInternal {
-    Flux<Rule> findAllBy(Pageable pageable);
-
     @Override
     Mono<Rule> findOneWithEagerRelationships(Long id);
 

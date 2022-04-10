@@ -19,7 +19,6 @@
       },
       "id": "ID",
       "name": "Name",
-      "raw": "Raw",
       "engine": "Engine",
       "vulnerability": "Vulnerability",
       "snippetMatchedRules": "Snippet Matched Rules"

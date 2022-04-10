@@ -15,8 +15,6 @@ import snipptor.snipptor.snipptor.domain.Snippet;
 @SuppressWarnings("unused")
 @Repository
 public interface SnippetRepository extends ReactiveCrudRepository<Snippet, Long>, SnippetRepositoryInternal {
-    Flux<Snippet> findAllBy(Pageable pageable);
-
     @Override
     Mono<Snippet> findOneWithEagerRelationships(Long id);
 

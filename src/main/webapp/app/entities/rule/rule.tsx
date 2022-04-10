@@ -1,80 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { byteSize, Translate, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getEntities } from './rule.reducer';
 import { IRule } from 'app/shared/model/rule.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
-import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 export const Rule = (props: RouteComponentProps<{ url: string }>) => {
   const dispatch = useAppDispatch();
 
-  const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
-  );
-
   const ruleList = useAppSelector(state => state.rule.entities);
   const loading = useAppSelector(state => state.rule.loading);
-  const totalItems = useAppSelector(state => state.rule.totalItems);
-
-  const getAllEntities = () => {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-      })
-    );
-  };
-
-  const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
-    if (props.location.search !== endURL) {
-      props.history.push(`${props.location.pathname}${endURL}`);
-    }
-  };
 
   useEffect(() => {
-    sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(props.location.search);
-    const page = params.get('page');
-    const sort = params.get(SORT);
-    if (page && sort) {
-      const sortSplit = sort.split(',');
-      setPaginationState({
-        ...paginationState,
-        activePage: +page,
-        sort: sortSplit[0],
-        order: sortSplit[1],
-      });
-    }
-  }, [props.location.search]);
-
-  const sort = p => () => {
-    setPaginationState({
-      ...paginationState,
-      order: paginationState.order === ASC ? DESC : ASC,
-      sort: p,
-    });
-  };
-
-  const handlePagination = currentPage =>
-    setPaginationState({
-      ...paginationState,
-      activePage: currentPage,
-    });
+    dispatch(getEntities({}));
+  }, []);
 
   const handleSyncList = () => {
-    sortEntities();
+    dispatch(getEntities({}));
   };
 
   const { match } = props;
@@ -100,20 +46,20 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="snipptorApp.rule.id">ID</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="snipptorApp.rule.name">Name</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('raw')}>
-                  <Translate contentKey="snipptorApp.rule.raw">Raw</Translate> <FontAwesomeIcon icon="sort" />
+                <th>
+                  <Translate contentKey="snipptorApp.rule.id">ID</Translate>
                 </th>
                 <th>
-                  <Translate contentKey="snipptorApp.rule.engine">Engine</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="snipptorApp.rule.name">Name</Translate>
                 </th>
                 <th>
-                  <Translate contentKey="snipptorApp.rule.vulnerability">Vulnerability</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="snipptorApp.rule.engine">Engine</Translate>
+                </th>
+                <th>
+                  <Translate contentKey="snipptorApp.rule.vulnerability">Vulnerability</Translate>
+                </th>
+                <th>
+                  <Translate contentKey="snipptorApp.rule.snippetMatchedRules">Snippet Matched Rules</Translate>
                 </th>
                 <th />
               </tr>
@@ -127,9 +73,18 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
                     </Button>
                   </td>
                   <td>{rule.name}</td>
-                  <td>{rule.raw}</td>
                   <td>{rule.engine ? <Link to={`engine/${rule.engine.id}`}>{rule.engine.id}</Link> : ''}</td>
                   <td>{rule.vulnerability ? <Link to={`vulnerability/${rule.vulnerability.id}`}>{rule.vulnerability.id}</Link> : ''}</td>
+                  <td>
+                    {rule.snippetMatchedRules
+                      ? rule.snippetMatchedRules.map((val, j) => (
+                          <span key={j}>
+                            <Link to={`snippet-matched-rules/${val.id}`}>{val.id}</Link>
+                            {j === rule.snippetMatchedRules.length - 1 ? '' : ', '}
+                          </span>
+                        ))
+                      : null}
+                  </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${rule.id}`} color="info" size="sm" data-cy="entityDetailsButton">
@@ -138,25 +93,13 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
                           <Translate contentKey="entity.action.view">View</Translate>
                         </span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`${match.url}/${rule.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
+                      <Button tag={Link} to={`${match.url}/${rule.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.edit">Edit</Translate>
                         </span>
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`${match.url}/${rule.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
+                      <Button tag={Link} to={`${match.url}/${rule.id}/delete`} color="danger" size="sm" data-cy="entityDeleteButton">
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.delete">Delete</Translate>
@@ -176,24 +119,6 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
           )
         )}
       </div>
-      {totalItems ? (
-        <div className={ruleList && ruleList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
     </div>
   );
 };

@@ -20,7 +20,7 @@ export const RuleDeleteDialog = (props: RouteComponentProps<{ id: string }>) => 
   const updateSuccess = useAppSelector(state => state.rule.updateSuccess);
 
   const handleClose = () => {
-    props.history.push('/rule' + props.location.search);
+    props.history.push('/rule');
   };
 
   useEffect(() => {

@@ -26,9 +26,6 @@ public class Rule implements Serializable {
     @Column("name")
     private String name;
 
-    @Column("raw")
-    private String raw;
-
     @Transient
     private Engine engine;
 
@@ -71,19 +68,6 @@ public class Rule implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getRaw() {
-        return this.raw;
-    }
-
-    public Rule raw(String raw) {
-        this.setRaw(raw);
-        return this;
-    }
-
-    public void setRaw(String raw) {
-        this.raw = raw;
     }
 
     public Engine getEngine() {
@@ -180,7 +164,6 @@ public class Rule implements Serializable {
         return "Rule{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", raw='" + getRaw() + "'" +
             "}";
     }
 }

@@ -16,8 +16,6 @@ import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
 @Repository
 public interface SnippetMatchedRulesRepository
     extends ReactiveCrudRepository<SnippetMatchedRules, Long>, SnippetMatchedRulesRepositoryInternal {
-    Flux<SnippetMatchedRules> findAllBy(Pageable pageable);
-
     @Override
     <S extends SnippetMatchedRules> Mono<S> save(S entity);
 

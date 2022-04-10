@@ -12,7 +12,6 @@ public class EngineSqlHelper {
         List<Expression> columns = new ArrayList<>();
         columns.add(Column.aliased("id", table, columnPrefix + "_id"));
         columns.add(Column.aliased("name", table, columnPrefix + "_name"));
-        columns.add(Column.aliased("url", table, columnPrefix + "_url"));
 
         return columns;
     }

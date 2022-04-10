@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, byteSize } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getEntity } from './rule.reducer';
@@ -35,12 +35,6 @@ export const RuleDetail = (props: RouteComponentProps<{ id: string }>) => {
             </span>
           </dt>
           <dd>{ruleEntity.name}</dd>
-          <dt>
-            <span id="raw">
-              <Translate contentKey="snipptorApp.rule.raw">Raw</Translate>
-            </span>
-          </dt>
-          <dd>{ruleEntity.raw}</dd>
           <dt>
             <Translate contentKey="snipptorApp.rule.engine">Engine</Translate>
           </dt>

@@ -11,11 +11,8 @@ public class SnippetSqlHelper {
     public static List<Expression> getColumns(Table table, String columnPrefix) {
         List<Expression> columns = new ArrayList<>();
         columns.add(Column.aliased("id", table, columnPrefix + "_id"));
-        columns.add(Column.aliased("hash", table, columnPrefix + "_hash"));
         columns.add(Column.aliased("content", table, columnPrefix + "_content"));
         columns.add(Column.aliased("url", table, columnPrefix + "_url"));
-        columns.add(Column.aliased("classification", table, columnPrefix + "_classification"));
-        columns.add(Column.aliased("scan_count", table, columnPrefix + "_scan_count"));
 
         return columns;
     }

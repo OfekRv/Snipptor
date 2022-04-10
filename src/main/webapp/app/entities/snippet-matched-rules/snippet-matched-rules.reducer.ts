@@ -11,7 +11,6 @@ const initialState: EntityState<ISnippetMatchedRules> = {
   entities: [],
   entity: defaultValue,
   updating: false,
-  totalItems: 0,
   updateSuccess: false,
 };
 
@@ -20,7 +19,7 @@ const apiUrl = 'api/snippet-matched-rules';
 // Actions
 
 export const getEntities = createAsyncThunk('snippetMatchedRules/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
+  const requestUrl = `${apiUrl}?cacheBuster=${new Date().getTime()}`;
   return axios.get<ISnippetMatchedRules[]>(requestUrl);
 });
 
@@ -29,6 +28,47 @@ export const getEntity = createAsyncThunk(
   async (id: string | number) => {
     const requestUrl = `${apiUrl}/${id}`;
     return axios.get<ISnippetMatchedRules>(requestUrl);
+  },
+  { serializeError: serializeAxiosError }
+);
+
+export const createEntity = createAsyncThunk(
+  'snippetMatchedRules/create_entity',
+  async (entity: ISnippetMatchedRules, thunkAPI) => {
+    const result = await axios.post<ISnippetMatchedRules>(apiUrl, cleanEntity(entity));
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError }
+);
+
+export const updateEntity = createAsyncThunk(
+  'snippetMatchedRules/update_entity',
+  async (entity: ISnippetMatchedRules, thunkAPI) => {
+    const result = await axios.put<ISnippetMatchedRules>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError }
+);
+
+export const partialUpdateEntity = createAsyncThunk(
+  'snippetMatchedRules/partial_update_entity',
+  async (entity: ISnippetMatchedRules, thunkAPI) => {
+    const result = await axios.patch<ISnippetMatchedRules>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
+    thunkAPI.dispatch(getEntities({}));
+    return result;
+  },
+  { serializeError: serializeAxiosError }
+);
+
+export const deleteEntity = createAsyncThunk(
+  'snippetMatchedRules/delete_entity',
+  async (id: string | number, thunkAPI) => {
+    const requestUrl = `${apiUrl}/${id}`;
+    const result = await axios.delete<ISnippetMatchedRules>(requestUrl);
+    thunkAPI.dispatch(getEntities({}));
+    return result;
   },
   { serializeError: serializeAxiosError }
 );
@@ -44,20 +84,35 @@ export const SnippetMatchedRulesSlice = createEntitySlice({
         state.loading = false;
         state.entity = action.payload.data;
       })
+      .addCase(deleteEntity.fulfilled, state => {
+        state.updating = false;
+        state.updateSuccess = true;
+        state.entity = {};
+      })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
-        const { data, headers } = action.payload;
+        const { data } = action.payload;
 
         return {
           ...state,
           loading: false,
           entities: data,
-          totalItems: parseInt(headers['x-total-count'], 10),
         };
+      })
+      .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
+        state.updating = false;
+        state.loading = false;
+        state.updateSuccess = true;
+        state.entity = action.payload.data;
       })
       .addMatcher(isPending(getEntities, getEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;
+      })
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+        state.errorMessage = null;
+        state.updateSuccess = false;
+        state.updating = true;
       });
   },
 });

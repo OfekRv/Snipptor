@@ -18,11 +18,8 @@
         "title": "Snippet"
       },
       "id": "ID",
-      "hash": "Hash",
       "content": "Content",
       "url": "Url",
-      "classification": "Classification",
-      "scanCount": "Scan Count",
       "snippetMatchedRules": "Snippet Matched Rules"
     }
   }

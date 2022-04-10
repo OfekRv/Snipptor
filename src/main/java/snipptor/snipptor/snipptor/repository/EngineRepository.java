@@ -15,8 +15,6 @@ import snipptor.snipptor.snipptor.domain.Engine;
 @SuppressWarnings("unused")
 @Repository
 public interface EngineRepository extends ReactiveCrudRepository<Engine, Long>, EngineRepositoryInternal {
-    Flux<Engine> findAllBy(Pageable pageable);
-
     @Override
     <S extends Engine> Mono<S> save(S entity);
 

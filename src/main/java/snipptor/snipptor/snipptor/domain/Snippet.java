@@ -9,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 
 /**
  * A Snippet.
@@ -23,20 +22,12 @@ public class Snippet implements Serializable {
     @Column("id")
     private Long id;
 
-    @Column("hash")
-    private String hash;
-
+    @NotNull(message = "must not be null")
     @Column("content")
     private String content;
 
     @Column("url")
     private String url;
-
-    @Column("classification")
-    private SnippetClassification classification;
-
-    @Column("scan_count")
-    private Long scanCount;
 
     @Transient
     @JsonIgnoreProperties(value = { "rules", "snippets" }, allowSetters = true)
@@ -55,19 +46,6 @@ public class Snippet implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getHash() {
-        return this.hash;
-    }
-
-    public Snippet hash(String hash) {
-        this.setHash(hash);
-        return this;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     public String getContent() {
@@ -94,32 +72,6 @@ public class Snippet implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public SnippetClassification getClassification() {
-        return this.classification;
-    }
-
-    public Snippet classification(SnippetClassification classification) {
-        this.setClassification(classification);
-        return this;
-    }
-
-    public void setClassification(SnippetClassification classification) {
-        this.classification = classification;
-    }
-
-    public Long getScanCount() {
-        return this.scanCount;
-    }
-
-    public Snippet scanCount(Long scanCount) {
-        this.setScanCount(scanCount);
-        return this;
-    }
-
-    public void setScanCount(Long scanCount) {
-        this.scanCount = scanCount;
     }
 
     public Set<SnippetMatchedRules> getSnippetMatchedRules() {
@@ -171,11 +123,8 @@ public class Snippet implements Serializable {
     public String toString() {
         return "Snippet{" +
             "id=" + getId() +
-            ", hash='" + getHash() + "'" +
             ", content='" + getContent() + "'" +
             ", url='" + getUrl() + "'" +
-            ", classification='" + getClassification() + "'" +
-            ", scanCount=" + getScanCount() +
             "}";
     }
 }

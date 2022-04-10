@@ -1,11 +1,11 @@
-id;name;raw
-1;Account SMTP EXE;../fake-data/blob/hipster.txt
-2;fuchsia Beauty;../fake-data/blob/hipster.txt
-3;Reverse-engineered Falkland;../fake-data/blob/hipster.txt
-4;invoice;../fake-data/blob/hipster.txt
-5;Pants parse;../fake-data/blob/hipster.txt
-6;Mouse redefine;../fake-data/blob/hipster.txt
-7;visualize generating Street;../fake-data/blob/hipster.txt
-8;Sausages;../fake-data/blob/hipster.txt
-9;Wyoming Rapids;../fake-data/blob/hipster.txt
-10;Auto Meadow;../fake-data/blob/hipster.txt
+id;name
+1;Account SMTP EXE
+2;fuchsia Beauty
+3;Reverse-engineered Falkland
+4;invoice
+5;Pants parse
+6;Mouse redefine
+7;visualize generating Street
+8;Sausages
+9;Wyoming Rapids
+10;Auto Meadow

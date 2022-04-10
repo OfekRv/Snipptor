@@ -6,39 +6,19 @@
   "entityTableName": "snippet",
   "fields": [
     {
-      "fieldName": "hash",
-      "fieldType": "String",
-      "options": {
-        "readOnly": true
-      }
-    },
-    {
       "fieldName": "content",
-      "fieldType": "byte[]",
-      "fieldTypeBlobContent": "text",
+      "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "url",
       "fieldType": "String"
-    },
-    {
-      "fieldName": "classification",
-      "fieldType": "SnippetClassification",
-      "fieldValues": "UNKNOWN (Unknown),SAFE (Safe),MALICIOUS (Malicious),VULNERABLE (Vulnerable)"
-    },
-    {
-      "fieldName": "scanCount",
-      "fieldType": "Long",
-      "options": {
-        "readOnly": true
-      }
     }
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Snippet",
-  "pagination": "pagination",
+  "pagination": "no",
   "readOnly": false,
   "relationships": [
     {

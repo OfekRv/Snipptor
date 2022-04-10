@@ -9,32 +9,25 @@
       "fieldName": "name",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "raw",
-      "fieldType": "byte[]",
-      "fieldTypeBlobContent": "text"
     }
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Rule",
-  "pagination": "pagination",
+  "pagination": "no",
   "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "engine",
       "otherEntityRelationshipName": "rule",
-      "ownerSide": true,
       "relationshipName": "engine",
-      "relationshipType": "one-to-one"
+      "relationshipType": "many-to-one"
     },
     {
       "otherEntityName": "vulnerability",
       "otherEntityRelationshipName": "rule",
-      "ownerSide": true,
       "relationshipName": "vulnerability",
-      "relationshipType": "one-to-one"
+      "relationshipType": "many-to-one"
     },
     {
       "otherEntityName": "snippetMatchedRules",
