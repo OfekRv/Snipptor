@@ -23,10 +23,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Base64Utils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.IntegrationTest;
 import snipptor.snipptor.snipptor.domain.Snippet;
+import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 import snipptor.snipptor.snipptor.repository.EntityManager;
 import snipptor.snipptor.snipptor.repository.SnippetRepository;
 
@@ -39,11 +41,20 @@ import snipptor.snipptor.snipptor.repository.SnippetRepository;
 @WithMockUser
 class SnippetResourceIT {
 
+    private static final String DEFAULT_HASH = "AAAAAAAAAA";
+    private static final String UPDATED_HASH = "BBBBBBBBBB";
+
     private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
     private static final String UPDATED_CONTENT = "BBBBBBBBBB";
 
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
+
+    private static final SnippetClassification DEFAULT_CLASSIFICATION = SnippetClassification.UNKNOWN;
+    private static final SnippetClassification UPDATED_CLASSIFICATION = SnippetClassification.SAFE;
+
+    private static final Long DEFAULT_SCAN_COUNT = 1L;
+    private static final Long UPDATED_SCAN_COUNT = 2L;
 
     private static final String ENTITY_API_URL = "/api/snippets";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -72,7 +83,12 @@ class SnippetResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Snippet createEntity(EntityManager em) {
-        Snippet snippet = new Snippet().content(DEFAULT_CONTENT).url(DEFAULT_URL);
+        Snippet snippet = new Snippet()
+            .hash(DEFAULT_HASH)
+            .content(DEFAULT_CONTENT)
+            .url(DEFAULT_URL)
+            .classification(DEFAULT_CLASSIFICATION)
+            .scanCount(DEFAULT_SCAN_COUNT);
         return snippet;
     }
 
@@ -83,7 +99,12 @@ class SnippetResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Snippet createUpdatedEntity(EntityManager em) {
-        Snippet snippet = new Snippet().content(UPDATED_CONTENT).url(UPDATED_URL);
+        Snippet snippet = new Snippet()
+            .hash(UPDATED_HASH)
+            .content(UPDATED_CONTENT)
+            .url(UPDATED_URL)
+            .classification(UPDATED_CLASSIFICATION)
+            .scanCount(UPDATED_SCAN_COUNT);
         return snippet;
     }
 
@@ -124,8 +145,11 @@ class SnippetResourceIT {
         List<Snippet> snippetList = snippetRepository.findAll().collectList().block();
         assertThat(snippetList).hasSize(databaseSizeBeforeCreate + 1);
         Snippet testSnippet = snippetList.get(snippetList.size() - 1);
+        assertThat(testSnippet.getHash()).isEqualTo(DEFAULT_HASH);
         assertThat(testSnippet.getContent()).isEqualTo(DEFAULT_CONTENT);
         assertThat(testSnippet.getUrl()).isEqualTo(DEFAULT_URL);
+        assertThat(testSnippet.getClassification()).isEqualTo(DEFAULT_CLASSIFICATION);
+        assertThat(testSnippet.getScanCount()).isEqualTo(DEFAULT_SCAN_COUNT);
     }
 
     @Test
@@ -151,54 +175,6 @@ class SnippetResourceIT {
     }
 
     @Test
-    void checkContentIsRequired() throws Exception {
-        int databaseSizeBeforeTest = snippetRepository.findAll().collectList().block().size();
-        // set the field null
-        snippet.setContent(null);
-
-        // Create the Snippet, which fails.
-
-        webTestClient
-            .post()
-            .uri(ENTITY_API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(TestUtil.convertObjectToJsonBytes(snippet))
-            .exchange()
-            .expectStatus()
-            .isBadRequest();
-
-        List<Snippet> snippetList = snippetRepository.findAll().collectList().block();
-        assertThat(snippetList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    void getAllSnippetsAsStream() {
-        // Initialize the database
-        snippetRepository.save(snippet).block();
-
-        List<Snippet> snippetList = webTestClient
-            .get()
-            .uri(ENTITY_API_URL)
-            .accept(MediaType.APPLICATION_NDJSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
-            .returnResult(Snippet.class)
-            .getResponseBody()
-            .filter(snippet::equals)
-            .collectList()
-            .block(Duration.ofSeconds(5));
-
-        assertThat(snippetList).isNotNull();
-        assertThat(snippetList).hasSize(1);
-        Snippet testSnippet = snippetList.get(0);
-        assertThat(testSnippet.getContent()).isEqualTo(DEFAULT_CONTENT);
-        assertThat(testSnippet.getUrl()).isEqualTo(DEFAULT_URL);
-    }
-
-    @Test
     void getAllSnippets() {
         // Initialize the database
         snippetRepository.save(snippet).block();
@@ -216,10 +192,16 @@ class SnippetResourceIT {
             .expectBody()
             .jsonPath("$.[*].id")
             .value(hasItem(snippet.getId().intValue()))
+            .jsonPath("$.[*].hash")
+            .value(hasItem(DEFAULT_HASH))
             .jsonPath("$.[*].content")
-            .value(hasItem(DEFAULT_CONTENT))
+            .value(hasItem(DEFAULT_CONTENT.toString()))
             .jsonPath("$.[*].url")
-            .value(hasItem(DEFAULT_URL));
+            .value(hasItem(DEFAULT_URL))
+            .jsonPath("$.[*].classification")
+            .value(hasItem(DEFAULT_CLASSIFICATION.toString()))
+            .jsonPath("$.[*].scanCount")
+            .value(hasItem(DEFAULT_SCAN_COUNT.intValue()));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -258,10 +240,16 @@ class SnippetResourceIT {
             .expectBody()
             .jsonPath("$.id")
             .value(is(snippet.getId().intValue()))
+            .jsonPath("$.hash")
+            .value(is(DEFAULT_HASH))
             .jsonPath("$.content")
-            .value(is(DEFAULT_CONTENT))
+            .value(is(DEFAULT_CONTENT.toString()))
             .jsonPath("$.url")
-            .value(is(DEFAULT_URL));
+            .value(is(DEFAULT_URL))
+            .jsonPath("$.classification")
+            .value(is(DEFAULT_CLASSIFICATION.toString()))
+            .jsonPath("$.scanCount")
+            .value(is(DEFAULT_SCAN_COUNT.intValue()));
     }
 
     @Test
@@ -285,7 +273,12 @@ class SnippetResourceIT {
 
         // Update the snippet
         Snippet updatedSnippet = snippetRepository.findById(snippet.getId()).block();
-        updatedSnippet.content(UPDATED_CONTENT).url(UPDATED_URL);
+        updatedSnippet
+            .hash(UPDATED_HASH)
+            .content(UPDATED_CONTENT)
+            .url(UPDATED_URL)
+            .classification(UPDATED_CLASSIFICATION)
+            .scanCount(UPDATED_SCAN_COUNT);
 
         webTestClient
             .put()
@@ -300,8 +293,11 @@ class SnippetResourceIT {
         List<Snippet> snippetList = snippetRepository.findAll().collectList().block();
         assertThat(snippetList).hasSize(databaseSizeBeforeUpdate);
         Snippet testSnippet = snippetList.get(snippetList.size() - 1);
+        assertThat(testSnippet.getHash()).isEqualTo(UPDATED_HASH);
         assertThat(testSnippet.getContent()).isEqualTo(UPDATED_CONTENT);
         assertThat(testSnippet.getUrl()).isEqualTo(UPDATED_URL);
+        assertThat(testSnippet.getClassification()).isEqualTo(UPDATED_CLASSIFICATION);
+        assertThat(testSnippet.getScanCount()).isEqualTo(UPDATED_SCAN_COUNT);
     }
 
     @Test
@@ -375,6 +371,8 @@ class SnippetResourceIT {
         Snippet partialUpdatedSnippet = new Snippet();
         partialUpdatedSnippet.setId(snippet.getId());
 
+        partialUpdatedSnippet.scanCount(UPDATED_SCAN_COUNT);
+
         webTestClient
             .patch()
             .uri(ENTITY_API_URL_ID, partialUpdatedSnippet.getId())
@@ -388,8 +386,11 @@ class SnippetResourceIT {
         List<Snippet> snippetList = snippetRepository.findAll().collectList().block();
         assertThat(snippetList).hasSize(databaseSizeBeforeUpdate);
         Snippet testSnippet = snippetList.get(snippetList.size() - 1);
+        assertThat(testSnippet.getHash()).isEqualTo(DEFAULT_HASH);
         assertThat(testSnippet.getContent()).isEqualTo(DEFAULT_CONTENT);
         assertThat(testSnippet.getUrl()).isEqualTo(DEFAULT_URL);
+        assertThat(testSnippet.getClassification()).isEqualTo(DEFAULT_CLASSIFICATION);
+        assertThat(testSnippet.getScanCount()).isEqualTo(UPDATED_SCAN_COUNT);
     }
 
     @Test
@@ -403,7 +404,12 @@ class SnippetResourceIT {
         Snippet partialUpdatedSnippet = new Snippet();
         partialUpdatedSnippet.setId(snippet.getId());
 
-        partialUpdatedSnippet.content(UPDATED_CONTENT).url(UPDATED_URL);
+        partialUpdatedSnippet
+            .hash(UPDATED_HASH)
+            .content(UPDATED_CONTENT)
+            .url(UPDATED_URL)
+            .classification(UPDATED_CLASSIFICATION)
+            .scanCount(UPDATED_SCAN_COUNT);
 
         webTestClient
             .patch()
@@ -418,8 +424,11 @@ class SnippetResourceIT {
         List<Snippet> snippetList = snippetRepository.findAll().collectList().block();
         assertThat(snippetList).hasSize(databaseSizeBeforeUpdate);
         Snippet testSnippet = snippetList.get(snippetList.size() - 1);
+        assertThat(testSnippet.getHash()).isEqualTo(UPDATED_HASH);
         assertThat(testSnippet.getContent()).isEqualTo(UPDATED_CONTENT);
         assertThat(testSnippet.getUrl()).isEqualTo(UPDATED_URL);
+        assertThat(testSnippet.getClassification()).isEqualTo(UPDATED_CLASSIFICATION);
+        assertThat(testSnippet.getScanCount()).isEqualTo(UPDATED_SCAN_COUNT);
     }
 
     @Test

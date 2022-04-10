@@ -35,6 +35,9 @@ class EngineResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_URL = "AAAAAAAAAA";
+    private static final String UPDATED_URL = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/engines";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -59,7 +62,7 @@ class EngineResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Engine createEntity(EntityManager em) {
-        Engine engine = new Engine().name(DEFAULT_NAME);
+        Engine engine = new Engine().name(DEFAULT_NAME).url(DEFAULT_URL);
         return engine;
     }
 
@@ -70,7 +73,7 @@ class EngineResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Engine createUpdatedEntity(EntityManager em) {
-        Engine engine = new Engine().name(UPDATED_NAME);
+        Engine engine = new Engine().name(UPDATED_NAME).url(UPDATED_URL);
         return engine;
     }
 
@@ -111,6 +114,7 @@ class EngineResourceIT {
         assertThat(engineList).hasSize(databaseSizeBeforeCreate + 1);
         Engine testEngine = engineList.get(engineList.size() - 1);
         assertThat(testEngine.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testEngine.getUrl()).isEqualTo(DEFAULT_URL);
     }
 
     @Test
@@ -157,29 +161,24 @@ class EngineResourceIT {
     }
 
     @Test
-    void getAllEnginesAsStream() {
-        // Initialize the database
-        engineRepository.save(engine).block();
+    void checkUrlIsRequired() throws Exception {
+        int databaseSizeBeforeTest = engineRepository.findAll().collectList().block().size();
+        // set the field null
+        engine.setUrl(null);
 
-        List<Engine> engineList = webTestClient
-            .get()
+        // Create the Engine, which fails.
+
+        webTestClient
+            .post()
             .uri(ENTITY_API_URL)
-            .accept(MediaType.APPLICATION_NDJSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(engine))
             .exchange()
             .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
-            .returnResult(Engine.class)
-            .getResponseBody()
-            .filter(engine::equals)
-            .collectList()
-            .block(Duration.ofSeconds(5));
+            .isBadRequest();
 
-        assertThat(engineList).isNotNull();
-        assertThat(engineList).hasSize(1);
-        Engine testEngine = engineList.get(0);
-        assertThat(testEngine.getName()).isEqualTo(DEFAULT_NAME);
+        List<Engine> engineList = engineRepository.findAll().collectList().block();
+        assertThat(engineList).hasSize(databaseSizeBeforeTest);
     }
 
     @Test
@@ -201,7 +200,9 @@ class EngineResourceIT {
             .jsonPath("$.[*].id")
             .value(hasItem(engine.getId().intValue()))
             .jsonPath("$.[*].name")
-            .value(hasItem(DEFAULT_NAME));
+            .value(hasItem(DEFAULT_NAME))
+            .jsonPath("$.[*].url")
+            .value(hasItem(DEFAULT_URL));
     }
 
     @Test
@@ -223,7 +224,9 @@ class EngineResourceIT {
             .jsonPath("$.id")
             .value(is(engine.getId().intValue()))
             .jsonPath("$.name")
-            .value(is(DEFAULT_NAME));
+            .value(is(DEFAULT_NAME))
+            .jsonPath("$.url")
+            .value(is(DEFAULT_URL));
     }
 
     @Test
@@ -247,7 +250,7 @@ class EngineResourceIT {
 
         // Update the engine
         Engine updatedEngine = engineRepository.findById(engine.getId()).block();
-        updatedEngine.name(UPDATED_NAME);
+        updatedEngine.name(UPDATED_NAME).url(UPDATED_URL);
 
         webTestClient
             .put()
@@ -263,6 +266,7 @@ class EngineResourceIT {
         assertThat(engineList).hasSize(databaseSizeBeforeUpdate);
         Engine testEngine = engineList.get(engineList.size() - 1);
         assertThat(testEngine.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testEngine.getUrl()).isEqualTo(UPDATED_URL);
     }
 
     @Test
@@ -352,6 +356,7 @@ class EngineResourceIT {
         assertThat(engineList).hasSize(databaseSizeBeforeUpdate);
         Engine testEngine = engineList.get(engineList.size() - 1);
         assertThat(testEngine.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testEngine.getUrl()).isEqualTo(DEFAULT_URL);
     }
 
     @Test
@@ -365,7 +370,7 @@ class EngineResourceIT {
         Engine partialUpdatedEngine = new Engine();
         partialUpdatedEngine.setId(engine.getId());
 
-        partialUpdatedEngine.name(UPDATED_NAME);
+        partialUpdatedEngine.name(UPDATED_NAME).url(UPDATED_URL);
 
         webTestClient
             .patch()
@@ -381,6 +386,7 @@ class EngineResourceIT {
         assertThat(engineList).hasSize(databaseSizeBeforeUpdate);
         Engine testEngine = engineList.get(engineList.size() - 1);
         assertThat(testEngine.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testEngine.getUrl()).isEqualTo(UPDATED_URL);
     }
 
     @Test

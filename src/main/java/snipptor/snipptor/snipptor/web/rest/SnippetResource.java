@@ -2,6 +2,7 @@ package snipptor.snipptor.snipptor.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,18 +11,25 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.domain.Snippet;
 import snipptor.snipptor.snipptor.repository.SnippetRepository;
 import snipptor.snipptor.snipptor.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.reactive.ResponseUtil;
 
 /**
@@ -148,11 +156,20 @@ public class SnippetResource {
                 Mono<Snippet> result = snippetRepository
                     .findById(snippet.getId())
                     .map(existingSnippet -> {
+                        if (snippet.getHash() != null) {
+                            existingSnippet.setHash(snippet.getHash());
+                        }
                         if (snippet.getContent() != null) {
                             existingSnippet.setContent(snippet.getContent());
                         }
                         if (snippet.getUrl() != null) {
                             existingSnippet.setUrl(snippet.getUrl());
+                        }
+                        if (snippet.getClassification() != null) {
+                            existingSnippet.setClassification(snippet.getClassification());
+                        }
+                        if (snippet.getScanCount() != null) {
+                            existingSnippet.setScanCount(snippet.getScanCount());
                         }
 
                         return existingSnippet;
@@ -173,23 +190,32 @@ public class SnippetResource {
     /**
      * {@code GET  /snippets} : get all the snippets.
      *
+     * @param pageable the pagination information.
+     * @param request a {@link ServerHttpRequest} request.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of snippets in body.
      */
     @GetMapping("/snippets")
-    public Mono<List<Snippet>> getAllSnippets(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get all Snippets");
-        return snippetRepository.findAllWithEagerRelationships().collectList();
-    }
-
-    /**
-     * {@code GET  /snippets} : get all the snippets as a stream.
-     * @return the {@link Flux} of snippets.
-     */
-    @GetMapping(value = "/snippets", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Flux<Snippet> getAllSnippetsAsStream() {
-        log.debug("REST request to get all Snippets as a stream");
-        return snippetRepository.findAll();
+    public Mono<ResponseEntity<List<Snippet>>> getAllSnippets(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        ServerHttpRequest request,
+        @RequestParam(required = false, defaultValue = "true") boolean eagerload
+    ) {
+        log.debug("REST request to get a page of Snippets");
+        return snippetRepository
+            .count()
+            .zipWith(snippetRepository.findAllBy(pageable).collectList())
+            .map(countWithEntities ->
+                ResponseEntity
+                    .ok()
+                    .headers(
+                        PaginationUtil.generatePaginationHttpHeaders(
+                            UriComponentsBuilder.fromHttpRequest(request),
+                            new PageImpl<>(countWithEntities.getT2(), pageable, countWithEntities.getT1())
+                        )
+                    )
+                    .body(countWithEntities.getT2())
+            );
     }
 
     /**

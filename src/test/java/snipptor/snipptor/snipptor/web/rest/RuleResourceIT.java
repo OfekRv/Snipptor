@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Base64Utils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.IntegrationTest;
@@ -41,6 +42,9 @@ class RuleResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_RAW = "AAAAAAAAAA";
+    private static final String UPDATED_RAW = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/rules";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -69,7 +73,7 @@ class RuleResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Rule createEntity(EntityManager em) {
-        Rule rule = new Rule().name(DEFAULT_NAME);
+        Rule rule = new Rule().name(DEFAULT_NAME).raw(DEFAULT_RAW);
         return rule;
     }
 
@@ -80,7 +84,7 @@ class RuleResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Rule createUpdatedEntity(EntityManager em) {
-        Rule rule = new Rule().name(UPDATED_NAME);
+        Rule rule = new Rule().name(UPDATED_NAME).raw(UPDATED_RAW);
         return rule;
     }
 
@@ -122,6 +126,7 @@ class RuleResourceIT {
         assertThat(ruleList).hasSize(databaseSizeBeforeCreate + 1);
         Rule testRule = ruleList.get(ruleList.size() - 1);
         assertThat(testRule.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testRule.getRaw()).isEqualTo(DEFAULT_RAW);
     }
 
     @Test
@@ -168,32 +173,6 @@ class RuleResourceIT {
     }
 
     @Test
-    void getAllRulesAsStream() {
-        // Initialize the database
-        ruleRepository.save(rule).block();
-
-        List<Rule> ruleList = webTestClient
-            .get()
-            .uri(ENTITY_API_URL)
-            .accept(MediaType.APPLICATION_NDJSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
-            .returnResult(Rule.class)
-            .getResponseBody()
-            .filter(rule::equals)
-            .collectList()
-            .block(Duration.ofSeconds(5));
-
-        assertThat(ruleList).isNotNull();
-        assertThat(ruleList).hasSize(1);
-        Rule testRule = ruleList.get(0);
-        assertThat(testRule.getName()).isEqualTo(DEFAULT_NAME);
-    }
-
-    @Test
     void getAllRules() {
         // Initialize the database
         ruleRepository.save(rule).block();
@@ -212,7 +191,9 @@ class RuleResourceIT {
             .jsonPath("$.[*].id")
             .value(hasItem(rule.getId().intValue()))
             .jsonPath("$.[*].name")
-            .value(hasItem(DEFAULT_NAME));
+            .value(hasItem(DEFAULT_NAME))
+            .jsonPath("$.[*].raw")
+            .value(hasItem(DEFAULT_RAW.toString()));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -252,7 +233,9 @@ class RuleResourceIT {
             .jsonPath("$.id")
             .value(is(rule.getId().intValue()))
             .jsonPath("$.name")
-            .value(is(DEFAULT_NAME));
+            .value(is(DEFAULT_NAME))
+            .jsonPath("$.raw")
+            .value(is(DEFAULT_RAW.toString()));
     }
 
     @Test
@@ -276,7 +259,7 @@ class RuleResourceIT {
 
         // Update the rule
         Rule updatedRule = ruleRepository.findById(rule.getId()).block();
-        updatedRule.name(UPDATED_NAME);
+        updatedRule.name(UPDATED_NAME).raw(UPDATED_RAW);
 
         webTestClient
             .put()
@@ -292,6 +275,7 @@ class RuleResourceIT {
         assertThat(ruleList).hasSize(databaseSizeBeforeUpdate);
         Rule testRule = ruleList.get(ruleList.size() - 1);
         assertThat(testRule.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testRule.getRaw()).isEqualTo(UPDATED_RAW);
     }
 
     @Test
@@ -365,6 +349,8 @@ class RuleResourceIT {
         Rule partialUpdatedRule = new Rule();
         partialUpdatedRule.setId(rule.getId());
 
+        partialUpdatedRule.raw(UPDATED_RAW);
+
         webTestClient
             .patch()
             .uri(ENTITY_API_URL_ID, partialUpdatedRule.getId())
@@ -379,6 +365,7 @@ class RuleResourceIT {
         assertThat(ruleList).hasSize(databaseSizeBeforeUpdate);
         Rule testRule = ruleList.get(ruleList.size() - 1);
         assertThat(testRule.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testRule.getRaw()).isEqualTo(UPDATED_RAW);
     }
 
     @Test
@@ -392,7 +379,7 @@ class RuleResourceIT {
         Rule partialUpdatedRule = new Rule();
         partialUpdatedRule.setId(rule.getId());
 
-        partialUpdatedRule.name(UPDATED_NAME);
+        partialUpdatedRule.name(UPDATED_NAME).raw(UPDATED_RAW);
 
         webTestClient
             .patch()
@@ -408,6 +395,7 @@ class RuleResourceIT {
         assertThat(ruleList).hasSize(databaseSizeBeforeUpdate);
         Rule testRule = ruleList.get(ruleList.size() - 1);
         assertThat(testRule.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testRule.getRaw()).isEqualTo(UPDATED_RAW);
     }
 
     @Test

@@ -1,11 +1,11 @@
-id;content;url
-1;Lodge complexity;https://sean.biz
-2;matrix interface Credit;https://jose.name
-3;Creative;http://myrna.name
-4;Account Director;https://cayla.name
-5;Clothing Car;https://sheridan.name
-6;Technician;https://dejah.name
-7;port invoice;https://oleta.name
-8;sky Hawaii;http://benny.com
-9;up full-range;https://lavinia.org
-10;Sausages Account connect;http://angelo.name
+id;hash;content;url;classification;scan_count
+1;Lodge complexity;../fake-data/blob/hipster.txt;https://sean.biz;VULNERABLE;71476
+2;lime quantify Metal;../fake-data/blob/hipster.txt;https://elody.org;VULNERABLE;36583
+3;pixel;../fake-data/blob/hipster.txt;https://elenora.org;VULNERABLE;33398
+4;override;../fake-data/blob/hipster.txt;http://alexandro.net;VULNERABLE;4753
+5;Balanced program;../fake-data/blob/hipster.txt;http://vinnie.net;SAFE;60169
+6;payment;../fake-data/blob/hipster.txt;http://alexandrea.name;VULNERABLE;27523
+7;calculate sky Hawaii;../fake-data/blob/hipster.txt;http://benny.com;SAFE;84091
+8;Pound;../fake-data/blob/hipster.txt;http://reba.name;VULNERABLE;74259
+9;Tactics;../fake-data/blob/hipster.txt;http://zaria.net;SAFE;27729
+10;Awesome;../fake-data/blob/hipster.txt;https://santino.org;SAFE;43479

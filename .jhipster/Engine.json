@@ -9,12 +9,17 @@
       "fieldName": "name",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
     }
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
   "name": "Engine",
-  "pagination": "no",
+  "pagination": "pagination",
   "readOnly": false,
   "relationships": [],
   "service": "no"

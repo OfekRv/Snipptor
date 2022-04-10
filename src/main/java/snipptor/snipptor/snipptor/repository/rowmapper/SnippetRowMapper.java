@@ -4,6 +4,7 @@ import io.r2dbc.spi.Row;
 import java.util.function.BiFunction;
 import org.springframework.stereotype.Service;
 import snipptor.snipptor.snipptor.domain.Snippet;
+import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 
 /**
  * Converter between {@link Row} to {@link Snippet}, with proper type conversions.
@@ -25,8 +26,11 @@ public class SnippetRowMapper implements BiFunction<Row, String, Snippet> {
     public Snippet apply(Row row, String prefix) {
         Snippet entity = new Snippet();
         entity.setId(converter.fromRow(row, prefix + "_id", Long.class));
+        entity.setHash(converter.fromRow(row, prefix + "_hash", String.class));
         entity.setContent(converter.fromRow(row, prefix + "_content", String.class));
         entity.setUrl(converter.fromRow(row, prefix + "_url", String.class));
+        entity.setClassification(converter.fromRow(row, prefix + "_classification", SnippetClassification.class));
+        entity.setScanCount(converter.fromRow(row, prefix + "_scan_count", Long.class));
         return entity;
     }
 }

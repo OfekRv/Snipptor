@@ -20,7 +20,7 @@ export const SnippetDeleteDialog = (props: RouteComponentProps<{ id: string }>) 
   const updateSuccess = useAppSelector(state => state.snippet.updateSuccess);
 
   const handleClose = () => {
-    props.history.push('/snippet');
+    props.history.push('/snippet' + props.location.search);
   };
 
   useEffect(() => {

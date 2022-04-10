@@ -8,7 +8,7 @@ import { IRule } from 'app/shared/model/rule.model';
 import { getEntities as getRules } from 'app/entities/rule/rule.reducer';
 import { ISnippet } from 'app/shared/model/snippet.model';
 import { getEntities as getSnippets } from 'app/entities/snippet/snippet.reducer';
-import { getEntity, updateEntity, createEntity, reset } from './snippet-matched-rules.reducer';
+import { getEntity, reset } from './snippet-matched-rules.reducer';
 import { ISnippetMatchedRules } from 'app/shared/model/snippet-matched-rules.model';
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -51,12 +51,6 @@ export const SnippetMatchedRulesUpdate = (props: RouteComponentProps<{ id: strin
       ...snippetMatchedRulesEntity,
       ...values,
     };
-
-    if (isNew) {
-      dispatch(createEntity(entity));
-    } else {
-      dispatch(updateEntity(entity));
-    }
   };
 
   const defaultValues = () =>

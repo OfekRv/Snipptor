@@ -14,10 +14,19 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="content" type="varchar(255)">
+            <column name="hash" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="content" type="${clobType}">
                 <constraints nullable="false" />
             </column>
             <column name="url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="classification" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="scan_count" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -55,8 +64,11 @@
                   tableName="snippet"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="content" type="string"/>
+            <column name="hash" type="string"/>
+            <column name="content" type="clob"/>
             <column name="url" type="string"/>
+            <column name="classification" type="string"/>
+            <column name="scan_count" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

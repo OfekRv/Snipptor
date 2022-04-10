@@ -5,6 +5,7 @@ import { ISnippetMatchedRules } from 'app/shared/model/snippet-matched-rules.mod
 export interface IRule {
   id?: number;
   name?: string;
+  raw?: string | null;
   engine?: IEngine | null;
   vulnerability?: IVulnerability | null;
   snippetMatchedRules?: ISnippetMatchedRules[] | null;
