@@ -48,7 +48,7 @@ export const RuleDetail = (props: RouteComponentProps<{ id: string }>) => {
           <dt>
             <Translate contentKey="snipptorApp.rule.vulnerability">Vulnerability</Translate>
           </dt>
-          <dd>{ruleEntity.vulnerability ? ruleEntity.vulnerability.id : ''}</dd>
+          <dd>{ruleEntity.vulnerability ? ruleEntity.vulnerability.name : ''}</dd>
           <dt>
             <Translate contentKey="snipptorApp.rule.snippetMatchedRules">Snippet Matched Rules</Translate>
           </dt>

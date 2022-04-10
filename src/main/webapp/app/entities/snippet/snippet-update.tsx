@@ -60,9 +60,12 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
 
   const defaultValues = () =>
     isNew
-      ? {}
+      ? {
+      scanCount: 0,
+      }
       : {
           classification: 'UNKNOWN',
+          scanCount: 0,
           ...snippetEntity,
           snippetMatchedRules: snippetEntity?.snippetMatchedRules?.map(e => e.id.toString()),
         };
@@ -92,12 +95,12 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   validate={{ required: true }}
                 />
               ) : null}
-              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" />
               <ValidatedField
                 label={translate('snipptorApp.snippet.content')}
                 id="snippet-content"
                 name="content"
                 data-cy="content"
+                rows={10}
                 type="textarea"
                 validate={{
                   required: { value: true, message: translate('entity.validation.required') },
@@ -123,6 +126,8 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 name="scanCount"
                 data-cy="scanCount"
                 type="text"
+                value={0}
+                disabled
               />
               <ValidatedField
                 label={translate('snipptorApp.snippet.snippetMatchedRules')}

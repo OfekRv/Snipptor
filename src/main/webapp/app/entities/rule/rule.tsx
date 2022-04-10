@@ -128,8 +128,8 @@ export const Rule = (props: RouteComponentProps<{ url: string }>) => {
                   </td>
                   <td>{rule.name}</td>
                   <td>{rule.raw}</td>
-                  <td>{rule.engine ? <Link to={`engine/${rule.engine.id}`}>{rule.engine.id}</Link> : ''}</td>
-                  <td>{rule.vulnerability ? <Link to={`vulnerability/${rule.vulnerability.id}`}>{rule.vulnerability.id}</Link> : ''}</td>
+                  <td>{rule.engine ? <Link to={`engine/${rule.engine.id}`}>{rule.engine.name}</Link> : ''}</td>
+                  <td>{rule.vulnerability ? <Link to={`vulnerability/${rule.vulnerability.id}`}>{rule.vulnerability.name}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${rule.id}`} color="info" size="sm" data-cy="entityDetailsButton">

@@ -2,15 +2,20 @@ package snipptor.snipptor.snipptor.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +24,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.testcontainers.shaded.com.google.common.hash.Hashing;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import snipptor.snipptor.snipptor.domain.Snippet;
@@ -66,6 +73,8 @@ public class SnippetResource {
         if (snippet.getId() != null) {
             throw new BadRequestAlertException("A new snippet cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        snippet.setHash(createHashFromContent(snippet.getContent()));
+
         return snippetRepository
             .save(snippet)
             .map(result -> {
@@ -80,10 +89,23 @@ public class SnippetResource {
             });
     }
 
+    private String createHashFromContent(String content) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(
+                content.trim().replaceAll(" +", " ").getBytes(StandardCharsets.UTF_8));
+
+            return new String(Hex.encode(hash));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     /**
      * {@code PUT  /snippets/:id} : Updates an existing snippet.
      *
-     * @param id the id of the snippet to save.
+     * @param id      the id of the snippet to save.
      * @param snippet the snippet to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated snippet,
      * or with status {@code 400 (Bad Request)} if the snippet is not valid,
@@ -125,7 +147,7 @@ public class SnippetResource {
     /**
      * {@code PATCH  /snippets/:id} : Partial updates given fields of an existing snippet, field will ignore if it is null
      *
-     * @param id the id of the snippet to save.
+     * @param id      the id of the snippet to save.
      * @param snippet the snippet to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated snippet,
      * or with status {@code 400 (Bad Request)} if the snippet is not valid,
@@ -133,7 +155,7 @@ public class SnippetResource {
      * or with status {@code 500 (Internal Server Error)} if the snippet couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/snippets/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/snippets/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public Mono<ResponseEntity<Snippet>> partialUpdateSnippet(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Snippet snippet
@@ -190,8 +212,8 @@ public class SnippetResource {
     /**
      * {@code GET  /snippets} : get all the snippets.
      *
-     * @param pageable the pagination information.
-     * @param request a {@link ServerHttpRequest} request.
+     * @param pageable  the pagination information.
+     * @param request   a {@link ServerHttpRequest} request.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of snippets in body.
      */
