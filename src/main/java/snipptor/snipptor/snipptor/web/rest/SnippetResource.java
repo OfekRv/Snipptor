@@ -1,29 +1,33 @@
 package snipptor.snipptor.snipptor.web.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import snipptor.snipptor.snipptor.domain.Snippet;
+import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
+import snipptor.snipptor.snipptor.repository.RuleRepository;
+import snipptor.snipptor.snipptor.repository.SnippetMatchedRulesRepository;
 import snipptor.snipptor.snipptor.repository.SnippetRepository;
 import snipptor.snipptor.snipptor.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * REST controller for managing {@link snipptor.snipptor.snipptor.domain.Snippet}.
@@ -42,8 +46,15 @@ public class SnippetResource {
 
     private final SnippetRepository snippetRepository;
 
-    public SnippetResource(SnippetRepository snippetRepository) {
+    private final SnippetMatchedRulesRepository snippetMatchedRulesRepository;
+
+    private final RuleRepository ruleRepository;
+
+    public SnippetResource(SnippetRepository snippetRepository, SnippetMatchedRulesRepository snippetMatchedRulesRepository, RuleRepository ruleRepository) {
+        this.applicationName = applicationName;
         this.snippetRepository = snippetRepository;
+        this.snippetMatchedRulesRepository = snippetMatchedRulesRepository;
+        this.ruleRepository = ruleRepository;
     }
 
     /**
@@ -59,7 +70,14 @@ public class SnippetResource {
         if (snippet.getId() != null) {
             throw new BadRequestAlertException("A new snippet cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // TODO : call scan engines
+        SnippetMatchedRules matched = new SnippetMatchedRules();
+        matched.setSnippets(Set.of(snippet));
+        matched.setRules(Set.of(ruleRepository.findAll().stream().findFirst().get()));
+        snippet.setSnippetMatchedRules(Set.of(matched));
         Snippet result = snippetRepository.save(snippet);
+
         return ResponseEntity
             .created(new URI("/api/snippets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -69,7 +87,7 @@ public class SnippetResource {
     /**
      * {@code PUT  /snippets/:id} : Updates an existing snippet.
      *
-     * @param id the id of the snippet to save.
+     * @param id      the id of the snippet to save.
      * @param snippet the snippet to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated snippet,
      * or with status {@code 400 (Bad Request)} if the snippet is not valid,
@@ -103,7 +121,7 @@ public class SnippetResource {
     /**
      * {@code PATCH  /snippets/:id} : Partial updates given fields of an existing snippet, field will ignore if it is null
      *
-     * @param id the id of the snippet to save.
+     * @param id      the id of the snippet to save.
      * @param snippet the snippet to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated snippet,
      * or with status {@code 400 (Bad Request)} if the snippet is not valid,
@@ -111,7 +129,7 @@ public class SnippetResource {
      * or with status {@code 500 (Internal Server Error)} if the snippet couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/snippets/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/snippets/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Snippet> partialUpdateSnippet(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Snippet snippet
@@ -160,7 +178,7 @@ public class SnippetResource {
     /**
      * {@code GET  /snippets} : get all the snippets.
      *
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of snippets in body.
      */

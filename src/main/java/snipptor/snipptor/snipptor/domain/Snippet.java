@@ -45,7 +45,7 @@ public class Snippet implements Serializable {
     @Column(name = "scan_count")
     private Long scanCount;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
         name = "rel_snippet__snippet_matched_rules",
         joinColumns = @JoinColumn(name = "snippet_id"),

@@ -1,12 +1,13 @@
 package snipptor.snipptor.snipptor.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A SnippetMatchedRules.
@@ -24,14 +25,14 @@ public class SnippetMatchedRules implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @ManyToMany(mappedBy = "snippetMatchedRules")
+    @ManyToMany(mappedBy = "snippetMatchedRules", cascade = CascadeType.ALL)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "engine", "vulnerability", "snippetMatchedRules" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"engine", "vulnerability", "snippetMatchedRules"}, allowSetters = true)
     private Set<Rule> rules = new HashSet<>();
 
     @ManyToMany(mappedBy = "snippetMatchedRules")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "snippetMatchedRules" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"snippetMatchedRules"}, allowSetters = true)
     private Set<Snippet> snippets = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
