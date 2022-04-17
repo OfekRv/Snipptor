@@ -4,46 +4,52 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
 import javax.validation.constraints.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A Rule.
  */
-@Table("rule")
+@Entity
+@Table(name = "rule")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Rule implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column("id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "id")
     private Long id;
 
-    @NotNull(message = "must not be null")
-    @Column("name")
+    @NotNull
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column("raw")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "raw")
     private String raw;
 
-    @Transient
+    @ManyToOne
     private Engine engine;
 
-    @Transient
+    @ManyToOne
     private Vulnerability vulnerability;
 
-    @Transient
+    @ManyToMany
+    @JoinTable(
+        name = "rel_rule__snippet_matched_rules",
+        joinColumns = @JoinColumn(name = "rule_id"),
+        inverseJoinColumns = @JoinColumn(name = "snippet_matched_rules_id")
+    )
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "rules", "snippets" }, allowSetters = true)
     private Set<SnippetMatchedRules> snippetMatchedRules = new HashSet<>();
-
-    @Column("engine_id")
-    private Long engineId;
-
-    @Column("vulnerability_id")
-    private Long vulnerabilityId;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -92,7 +98,6 @@ public class Rule implements Serializable {
 
     public void setEngine(Engine engine) {
         this.engine = engine;
-        this.engineId = engine != null ? engine.getId() : null;
     }
 
     public Rule engine(Engine engine) {
@@ -106,7 +111,6 @@ public class Rule implements Serializable {
 
     public void setVulnerability(Vulnerability vulnerability) {
         this.vulnerability = vulnerability;
-        this.vulnerabilityId = vulnerability != null ? vulnerability.getId() : null;
     }
 
     public Rule vulnerability(Vulnerability vulnerability) {
@@ -137,22 +141,6 @@ public class Rule implements Serializable {
         this.snippetMatchedRules.remove(snippetMatchedRules);
         snippetMatchedRules.getRules().remove(this);
         return this;
-    }
-
-    public Long getEngineId() {
-        return this.engineId;
-    }
-
-    public void setEngineId(Long engine) {
-        this.engineId = engine;
-    }
-
-    public Long getVulnerabilityId() {
-        return this.vulnerabilityId;
-    }
-
-    public void setVulnerabilityId(Long vulnerability) {
-        this.vulnerabilityId = vulnerability;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

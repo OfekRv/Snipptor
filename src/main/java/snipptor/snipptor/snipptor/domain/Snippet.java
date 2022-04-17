@@ -4,41 +4,54 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
 import javax.validation.constraints.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 import snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification;
 
 /**
  * A Snippet.
  */
-@Table("snippet")
+@Entity
+@Table(name = "snippet")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Snippet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column("id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "id")
     private Long id;
 
-    @Column("hash")
+    @Column(name = "hash")
     private String hash;
 
-    @Column("content")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column("url")
+    @Column(name = "url")
     private String url;
 
-    @Column("classification")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "classification")
     private SnippetClassification classification;
 
-    @Column("scan_count")
+    @Column(name = "scan_count")
     private Long scanCount;
 
-    @Transient
+    @ManyToMany
+    @JoinTable(
+        name = "rel_snippet__snippet_matched_rules",
+        joinColumns = @JoinColumn(name = "snippet_id"),
+        inverseJoinColumns = @JoinColumn(name = "snippet_matched_rules_id")
+    )
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "rules", "snippets" }, allowSetters = true)
     private Set<SnippetMatchedRules> snippetMatchedRules = new HashSet<>();
 

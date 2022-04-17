@@ -31,16 +31,17 @@ spring:
     serialization:
       indent-output: true
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://postgres:Aa123456@localhost:5432/snipptor}
-    driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
-    driverClassName: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
-    type: ${DATA_SOURCE_TYPE:com.zaxxer.hikari.HikariDataSource}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/snipptor}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:Aa123456}
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  jpa:
+    database-platform: tech.jhipster.domain.util.FixedPostgreSQL10Dialect
   liquibase:
     contexts: dev
-    url: ${JDBC_DATABASE_CONNECTION_URL:jdbc:postgresql://localhost:5432/snipptor}
-    driver-class-name: ${DATABASE_DRIVER_NAME:org.postgresql.Driver}
   mail:
     host: localhost
     port: 25
@@ -48,12 +49,6 @@ spring:
     password:
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
-  r2dbc:
-    url: ${R2DBC_DATABASE_CONNECTION_URL:r2dbc:postgresql://localhost:5432/snipptor}
-    username: ${DATABASE_USER:postgres}
-    password: ${DATABASE_PASSWORD:Aa123456}
-    properties:
-      sslMode: ${SSL_MODE:DISABLE}
   thymeleaf:
     cache: false
 
@@ -67,6 +62,10 @@ server:
 # ===================================================================
 
 jhipster:
+  cache: # Cache configuration
+    ehcache: # Ehcache configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
+      max-entries: 100 # Number of objects in each cache entry
   # CORS is only enabled by default with the "dev" profile
   cors:
     # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)

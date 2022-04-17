@@ -4,28 +4,33 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A SnippetMatchedRules.
  */
-@Table("snippet_matched_rules")
+@Entity
+@Table(name = "snippet_matched_rules")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SnippetMatchedRules implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column("id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "id")
     private Long id;
 
-    @Transient
+    @ManyToMany(mappedBy = "snippetMatchedRules")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "engine", "vulnerability", "snippetMatchedRules" }, allowSetters = true)
     private Set<Rule> rules = new HashSet<>();
 
-    @Transient
+    @ManyToMany(mappedBy = "snippetMatchedRules")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "snippetMatchedRules" }, allowSetters = true)
     private Set<Snippet> snippets = new HashSet<>();
 

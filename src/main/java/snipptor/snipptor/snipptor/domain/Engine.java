@@ -1,30 +1,33 @@
 package snipptor.snipptor.snipptor.domain;
 
 import java.io.Serializable;
+import javax.persistence.*;
 import javax.validation.constraints.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Engine.
  */
-@Table("engine")
+@Entity
+@Table(name = "engine")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Engine implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column("id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "id")
     private Long id;
 
-    @NotNull(message = "must not be null")
-    @Column("name")
+    @NotNull
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull(message = "must not be null")
-    @Column("url")
+    @NotNull
+    @Column(name = "url", nullable = false)
     private String url;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
