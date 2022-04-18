@@ -7,10 +7,10 @@
 
     <groupId>snipptor.snipptor.snipptor</groupId>
     <artifactId>snipptor</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
     <name>Snipptor</name>
-    <description>Description for snipptor</description>
+    <description>Code snippets security repository</description>
 
     <repositories>
         <!-- jhipster-needle-maven-repository -->

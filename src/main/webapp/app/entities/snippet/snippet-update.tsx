@@ -48,7 +48,6 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
     const entity = {
       ...snippetEntity,
       ...values,
-      matchedRules: snippetMatchedRules.find(it => it.id.toString() === values.matchedRules.toString()),
     };
 
     if (isNew) {
@@ -63,8 +62,7 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
       ? {}
       : {
           classification: 'UNKNOWN',
-          ...snippetEntity,
-          matchedRules: snippetEntity?.matchedRules?.id,
+          ...snippetEntity
         };
 
   return (
@@ -92,7 +90,7 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   validate={{ required: true }}
                 />
               ) : null}
-              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" />
+              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" disabled/>
               <ValidatedField
                 label={translate('snipptorApp.snippet.content')}
                 id="snippet-content"
@@ -102,8 +100,9 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 validate={{
                   required: { value: true, message: translate('entity.validation.required') },
                 }}
-              />
-              <ValidatedField label={translate('snipptorApp.snippet.url')} id="snippet-url" name="url" data-cy="url" type="text" />
+                disabled={!isNew}
+               />
+              <ValidatedField label={translate('snipptorApp.snippet.url')} id="snippet-url" name="url" data-cy="url" type="text" disabled={!isNew}/>
               <ValidatedField
                 label={translate('snipptorApp.snippet.classification')}
                 id="snippet-classification"
@@ -123,23 +122,8 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 name="scanCount"
                 data-cy="scanCount"
                 type="text"
+                disabled
               />
-              <ValidatedField
-                id="snippet-matchedRules"
-                name="matchedRules"
-                data-cy="matchedRules"
-                label={translate('snipptorApp.snippet.matchedRules')}
-                type="select"
-              >
-                <option value="" key="0" />
-                {snippetMatchedRules
-                  ? snippetMatchedRules.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/snippet" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

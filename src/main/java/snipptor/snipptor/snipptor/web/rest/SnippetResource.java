@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,6 +25,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,10 +72,22 @@ public class SnippetResource {
             throw new BadRequestAlertException("A new snippet cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        // TODO : use scan engines
-        SnippetMatchedRules matched = new SnippetMatchedRules();
-        matched.setRules(Set.of(ruleRepository.findAll().stream().findFirst().get()));
-        snippet.setMatchedRules(matched);
+        SnippetMatchedRules matched;
+        String snippetHash = calculateHashFromContent(snippet.getContent());
+        Optional<Snippet> alreadyExistSnippet = snippetRepository.findByHash(snippetHash);
+        if (alreadyExistSnippet.isPresent()) {
+            snippet = alreadyExistSnippet.get();
+            snippet.setScanCount(snippet.getScanCount() + 1);
+            matched = snippet.getMatchedRules();
+        } else {
+            snippet.setHash(snippetHash);
+            snippet.setScanCount(1l);
+            matched = new SnippetMatchedRules();
+
+            // TODO : use scan engines
+            matched.setRules(Set.of(ruleRepository.findAll().stream().findFirst().get()));
+            snippet.setMatchedRules(matched);
+        }
 
         Snippet result = snippetRepository.save(snippet);
         return ResponseEntity
@@ -107,7 +123,9 @@ public class SnippetResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Snippet result = snippetRepository.save(snippet);
+        Snippet result = snippetRepository.findById(id).get();
+        result.setClassification(snippet.getClassification());
+        result = snippetRepository.save(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, snippet.getId().toString()))
@@ -198,19 +216,16 @@ public class SnippetResource {
         return ResponseUtil.wrapOrNotFound(snippet);
     }
 
-    /**
-     * {@code DELETE  /snippets/:id} : delete the "id" snippet.
-     *
-     * @param id the id of the snippet to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/snippets/{id}")
-    public ResponseEntity<Void> deleteSnippet(@PathVariable Long id) {
-        log.debug("REST request to delete Snippet : {}", id);
-        snippetRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+    private String calculateHashFromContent(String content) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(
+                content.trim().replaceAll(" +", " ").getBytes(StandardCharsets.UTF_8));
+
+            return new String(Hex.encode(hash));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
