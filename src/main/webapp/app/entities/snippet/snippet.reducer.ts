@@ -63,17 +63,6 @@ export const partialUpdateEntity = createAsyncThunk(
   { serializeError: serializeAxiosError }
 );
 
-export const deleteEntity = createAsyncThunk(
-  'snippet/delete_entity',
-  async (id: string | number, thunkAPI) => {
-    const requestUrl = `${apiUrl}/${id}`;
-    const result = await axios.delete<ISnippet>(requestUrl);
-    thunkAPI.dispatch(getEntities({}));
-    return result;
-  },
-  { serializeError: serializeAxiosError }
-);
-
 // slice
 
 export const SnippetSlice = createEntitySlice({
@@ -84,11 +73,6 @@ export const SnippetSlice = createEntitySlice({
       .addCase(getEntity.fulfilled, (state, action) => {
         state.loading = false;
         state.entity = action.payload.data;
-      })
-      .addCase(deleteEntity.fulfilled, state => {
-        state.updating = false;
-        state.updateSuccess = true;
-        state.entity = {};
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
@@ -111,7 +95,7 @@ export const SnippetSlice = createEntitySlice({
         state.updateSuccess = false;
         state.loading = true;
       })
-      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity, deleteEntity), state => {
+      .addMatcher(isPending(createEntity, updateEntity, partialUpdateEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;

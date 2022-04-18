@@ -9,6 +9,8 @@ export interface ISnippet {
   classification?: SnippetClassification | null;
   scanCount?: number | null;
   matchedRules?: ISnippetMatchedRules | null;
+  matchedRulesCount?: number | null;
+  matchedRulesNames?: string[] | null;
 }
 
 export const defaultValue: Readonly<ISnippet> = {};

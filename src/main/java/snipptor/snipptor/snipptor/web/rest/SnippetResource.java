@@ -10,9 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import snipptor.snipptor.snipptor.contracts.ScanSnippet;
+import snipptor.snipptor.snipptor.contracts.SnippetRulesScanResult;
+import snipptor.snipptor.snipptor.domain.Engine;
+import snipptor.snipptor.snipptor.domain.Rule;
 import snipptor.snipptor.snipptor.domain.Snippet;
 import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
+import snipptor.snipptor.snipptor.repository.EngineRepository;
 import snipptor.snipptor.snipptor.repository.RuleRepository;
 import snipptor.snipptor.snipptor.repository.SnippetMatchedRulesRepository;
 import snipptor.snipptor.snipptor.repository.SnippetRepository;
@@ -28,10 +34,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing {@link snipptor.snipptor.snipptor.domain.Snippet}.
@@ -48,14 +52,20 @@ public class SnippetResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private RestTemplate restClient;
+
     private final SnippetRepository snippetRepository;
     private final RuleRepository ruleRepository;
+    private final EngineRepository engineRepository;
     private final SnippetMatchedRulesRepository MatchedRulesRepository;
 
-    public SnippetResource(SnippetRepository snippetRepository, RuleRepository ruleRepository, SnippetMatchedRulesRepository matchedRulesRepository) {
+    public SnippetResource(SnippetRepository snippetRepository, RuleRepository ruleRepository, EngineRepository engineRepository, SnippetMatchedRulesRepository matchedRulesRepository) {
         this.snippetRepository = snippetRepository;
         this.ruleRepository = ruleRepository;
+        this.engineRepository = engineRepository;
         MatchedRulesRepository = matchedRulesRepository;
+
+        restClient = new RestTemplate();
     }
 
     /**
@@ -84,8 +94,12 @@ public class SnippetResource {
             snippet.setScanCount(1l);
             matched = new SnippetMatchedRules();
 
-            // TODO : use scan engines
-            matched.setRules(Set.of(ruleRepository.findAll().stream().findFirst().get()));
+            String content = snippet.getContent();
+            Set<Rule> matchedRules = engineRepository.findAll().stream()
+                .map(e -> scanSnippet(e, content))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+            matched.setRules(matchedRules);
             snippet.setMatchedRules(matched);
         }
 
@@ -214,6 +228,16 @@ public class SnippetResource {
         log.debug("REST request to get Snippet : {}", id);
         Optional<Snippet> snippet = snippetRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(snippet);
+    }
+
+    private Collection<Rule> scanSnippet(Engine engine, String rawSnippet) {
+        SnippetRulesScanResult result =
+            restClient.postForObject(engine.getUrl() + "/scan",
+                new ScanSnippet(rawSnippet),
+                SnippetRulesScanResult.class);
+        return result.getMatches().stream()
+            .map(r -> ruleRepository.findByName(r).get())
+            .collect(Collectors.toSet());
     }
 
     private String calculateHashFromContent(String content) {

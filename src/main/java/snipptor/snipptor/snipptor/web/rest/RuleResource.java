@@ -1,29 +1,31 @@
 package snipptor.snipptor.snipptor.web.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import snipptor.snipptor.snipptor.contracts.UploadRule;
 import snipptor.snipptor.snipptor.domain.Rule;
 import snipptor.snipptor.snipptor.repository.RuleRepository;
 import snipptor.snipptor.snipptor.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link snipptor.snipptor.snipptor.domain.Rule}.
@@ -40,10 +42,13 @@ public class RuleResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private RestTemplate restClient;
+
     private final RuleRepository ruleRepository;
 
     public RuleResource(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
+        restClient = new RestTemplate();
     }
 
     /**
@@ -59,6 +64,9 @@ public class RuleResource {
         if (rule.getId() != null) {
             throw new BadRequestAlertException("A new rule cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        uploadRule(rule);
+
         Rule result = ruleRepository.save(rule);
         return ResponseEntity
             .created(new URI("/api/rules/" + result.getId()))
@@ -69,7 +77,7 @@ public class RuleResource {
     /**
      * {@code PUT  /rules/:id} : Updates an existing rule.
      *
-     * @param id the id of the rule to save.
+     * @param id   the id of the rule to save.
      * @param rule the rule to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rule,
      * or with status {@code 400 (Bad Request)} if the rule is not valid,
@@ -101,7 +109,7 @@ public class RuleResource {
     /**
      * {@code PATCH  /rules/:id} : Partial updates given fields of an existing rule, field will ignore if it is null
      *
-     * @param id the id of the rule to save.
+     * @param id   the id of the rule to save.
      * @param rule the rule to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rule,
      * or with status {@code 400 (Bad Request)} if the rule is not valid,
@@ -109,7 +117,7 @@ public class RuleResource {
      * or with status {@code 500 (Internal Server Error)} if the rule couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/rules/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/rules/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Rule> partialUpdateRule(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Rule rule
@@ -125,6 +133,8 @@ public class RuleResource {
         if (!ruleRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
+
+        uploadRule(rule);
 
         Optional<Rule> result = ruleRepository
             .findById(rule.getId())
@@ -149,7 +159,7 @@ public class RuleResource {
     /**
      * {@code GET  /rules} : get all the rules.
      *
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of rules in body.
      */
@@ -191,10 +201,20 @@ public class RuleResource {
     @DeleteMapping("/rules/{id}")
     public ResponseEntity<Void> deleteRule(@PathVariable Long id) {
         log.debug("REST request to delete Rule : {}", id);
+        removeRule(ruleRepository.findById(id).get());
         ruleRepository.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    private void uploadRule(Rule rule) {
+        restClient.postForLocation(rule.getEngine().getUrl() + "/rules/" + rule.getName(),
+            new UploadRule(rule.getRaw()));
+    }
+
+    private void removeRule(Rule rule) {
+        restClient.delete(rule.getEngine().getUrl() + "/rules/" + rule.getName());
     }
 }

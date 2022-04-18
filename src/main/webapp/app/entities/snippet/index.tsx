@@ -6,7 +6,6 @@ import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 import Snippet from './snippet';
 import SnippetDetail from './snippet-detail';
 import SnippetUpdate from './snippet-update';
-import SnippetDeleteDialog from './snippet-delete-dialog';
 
 const Routes = ({ match }) => (
   <>
@@ -16,7 +15,6 @@ const Routes = ({ match }) => (
       <ErrorBoundaryRoute exact path={`${match.url}/:id`} component={SnippetDetail} />
       <ErrorBoundaryRoute path={match.url} component={Snippet} />
     </Switch>
-    <ErrorBoundaryRoute exact path={`${match.url}/:id/delete`} component={SnippetDeleteDialog} />
   </>
 );
 
