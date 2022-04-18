@@ -2,6 +2,7 @@ package snipptor.snipptor.snipptor.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -47,15 +48,14 @@ public class Snippet implements Serializable {
     private Long scanCount;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value = {"rules"}, allowSetters = true)
     private SnippetMatchedRules matchedRules;
 
     @Transient
-    @JsonProperty("matchedRulesCount")
+    @JsonSerialize
     private int matchedRulesCount;
 
     @Transient
-    @JsonProperty("matchedRulesNames")
+    @JsonSerialize
     private Collection<String> matchedRulesNames;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -189,5 +189,13 @@ public class Snippet implements Serializable {
         this.matchedRulesNames = matchedRules.getRules().stream()
             .map(r -> r.getName())
             .collect(Collectors.toList());
+    }
+
+    public int getMatchedRulesCount() {
+        return matchedRulesCount;
+    }
+
+    public Collection<String> getMatchedRulesNames() {
+        return matchedRulesNames;
     }
 }
