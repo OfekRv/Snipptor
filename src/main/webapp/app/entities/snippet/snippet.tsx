@@ -118,6 +118,9 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('scanCount')}>
                   <Translate contentKey="snipptorApp.snippet.scanCount">Scan Count</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th>
+                  <Translate contentKey="snipptorApp.snippet.matchedRules">Matched Rules</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th />
               </tr>
             </thead>
@@ -136,6 +139,13 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                     <Translate contentKey={`snipptorApp.SnippetClassification.${snippet.classification}`} />
                   </td>
                   <td>{snippet.scanCount}</td>
+                  <td>
+                    {snippet.matchedRules ? (
+                      <Link to={`snippet-matched-rules/${snippet.matchedRules.id}`}>{snippet.matchedRules.id}</Link>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${snippet.id}`} color="info" size="sm" data-cy="entityDetailsButton">

@@ -44,9 +44,8 @@
     {
       "otherEntityName": "snippetMatchedRules",
       "otherEntityRelationshipName": "snippet",
-      "ownerSide": true,
-      "relationshipName": "snippetMatchedRules",
-      "relationshipType": "many-to-many"
+      "relationshipName": "matchedRules",
+      "relationshipType": "many-to-one"
     }
   ],
   "service": "no"

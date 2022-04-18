@@ -45,16 +45,13 @@ public class SnippetResource {
     private String applicationName;
 
     private final SnippetRepository snippetRepository;
-
-    private final SnippetMatchedRulesRepository snippetMatchedRulesRepository;
-
     private final RuleRepository ruleRepository;
+    private final SnippetMatchedRulesRepository MatchedRulesRepository;
 
-    public SnippetResource(SnippetRepository snippetRepository, SnippetMatchedRulesRepository snippetMatchedRulesRepository, RuleRepository ruleRepository) {
-        this.applicationName = applicationName;
+    public SnippetResource(SnippetRepository snippetRepository, RuleRepository ruleRepository, SnippetMatchedRulesRepository matchedRulesRepository) {
         this.snippetRepository = snippetRepository;
-        this.snippetMatchedRulesRepository = snippetMatchedRulesRepository;
         this.ruleRepository = ruleRepository;
+        MatchedRulesRepository = matchedRulesRepository;
     }
 
     /**
@@ -71,13 +68,12 @@ public class SnippetResource {
             throw new BadRequestAlertException("A new snippet cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        // TODO : call scan engines
+        // TODO : use scan engines
         SnippetMatchedRules matched = new SnippetMatchedRules();
-        matched.setSnippets(Set.of(snippet));
         matched.setRules(Set.of(ruleRepository.findAll().stream().findFirst().get()));
-        snippet.setSnippetMatchedRules(Set.of(matched));
-        Snippet result = snippetRepository.save(snippet);
+        snippet.setMatchedRules(matched);
 
+        Snippet result = snippetRepository.save(snippet);
         return ResponseEntity
             .created(new URI("/api/snippets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -178,22 +174,13 @@ public class SnippetResource {
     /**
      * {@code GET  /snippets} : get all the snippets.
      *
-     * @param pageable  the pagination information.
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of snippets in body.
      */
     @GetMapping("/snippets")
-    public ResponseEntity<List<Snippet>> getAllSnippets(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "true") boolean eagerload
-    ) {
+    public ResponseEntity<List<Snippet>> getAllSnippets(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Snippets");
-        Page<Snippet> page;
-        if (eagerload) {
-            page = snippetRepository.findAllWithEagerRelationships(pageable);
-        } else {
-            page = snippetRepository.findAll(pageable);
-        }
+        Page<Snippet> page = snippetRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -207,7 +194,7 @@ public class SnippetResource {
     @GetMapping("/snippets/{id}")
     public ResponseEntity<Snippet> getSnippet(@PathVariable Long id) {
         log.debug("REST request to get Snippet : {}", id);
-        Optional<Snippet> snippet = snippetRepository.findOneWithEagerRelationships(id);
+        Optional<Snippet> snippet = snippetRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(snippet);
     }
 

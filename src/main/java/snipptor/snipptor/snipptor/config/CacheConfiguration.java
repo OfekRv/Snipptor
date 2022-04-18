@@ -49,14 +49,12 @@ public class CacheConfiguration {
             createCache(cm, snipptor.snipptor.snipptor.domain.Authority.class.getName());
             createCache(cm, snipptor.snipptor.snipptor.domain.User.class.getName() + ".authorities");
             createCache(cm, snipptor.snipptor.snipptor.domain.Snippet.class.getName());
-            createCache(cm, snipptor.snipptor.snipptor.domain.Snippet.class.getName() + ".snippetMatchedRules");
             createCache(cm, snipptor.snipptor.snipptor.domain.Rule.class.getName());
             createCache(cm, snipptor.snipptor.snipptor.domain.Rule.class.getName() + ".snippetMatchedRules");
             createCache(cm, snipptor.snipptor.snipptor.domain.Vulnerability.class.getName());
             createCache(cm, snipptor.snipptor.snipptor.domain.Engine.class.getName());
             createCache(cm, snipptor.snipptor.snipptor.domain.SnippetMatchedRules.class.getName());
             createCache(cm, snipptor.snipptor.snipptor.domain.SnippetMatchedRules.class.getName() + ".rules");
-            createCache(cm, snipptor.snipptor.snipptor.domain.SnippetMatchedRules.class.getName() + ".snippets");
             // jhipster-needle-ehcache-add-entry
         };
     }

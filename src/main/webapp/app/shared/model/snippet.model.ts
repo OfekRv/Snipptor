@@ -8,7 +8,7 @@ export interface ISnippet {
   url?: string | null;
   classification?: SnippetClassification | null;
   scanCount?: number | null;
-  snippetMatchedRules?: ISnippetMatchedRules[] | null;
+  matchedRules?: ISnippetMatchedRules | null;
 }
 
 export const defaultValue: Readonly<ISnippet> = {};

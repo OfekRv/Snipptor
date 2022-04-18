@@ -9,20 +9,13 @@
   "jpaMetamodelFiltering": false,
   "name": "SnippetMatchedRules",
   "pagination": "pagination",
-  "readOnly": true,
+  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "rule",
       "otherEntityRelationshipName": "snippetMatchedRules",
       "ownerSide": false,
       "relationshipName": "rule",
-      "relationshipType": "many-to-many"
-    },
-    {
-      "otherEntityName": "snippet",
-      "otherEntityRelationshipName": "snippetMatchedRules",
-      "ownerSide": false,
-      "relationshipName": "snippet",
       "relationshipType": "many-to-many"
     }
   ],

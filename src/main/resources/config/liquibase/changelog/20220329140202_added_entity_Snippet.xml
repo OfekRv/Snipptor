@@ -29,22 +29,11 @@
             <column name="scan_count" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="matched_rules_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-    </changeSet>
-
-    <changeSet id="20220329140202-1-relations" author="jhipster">
-
-        <createTable tableName="rel_snippet__snippet_matched_rules">
-            <column name="snippet_matched_rules_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="snippet_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="snippet_id, snippet_matched_rules_id" tableName="rel_snippet__snippet_matched_rules"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

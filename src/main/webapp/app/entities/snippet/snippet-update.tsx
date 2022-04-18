@@ -48,7 +48,7 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
     const entity = {
       ...snippetEntity,
       ...values,
-      snippetMatchedRules: mapIdList(values.snippetMatchedRules),
+      matchedRules: snippetMatchedRules.find(it => it.id.toString() === values.matchedRules.toString()),
     };
 
     if (isNew) {
@@ -60,14 +60,11 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
 
   const defaultValues = () =>
     isNew
-      ? {
-      scanCount: 0,
-      }
+      ? {}
       : {
           classification: 'UNKNOWN',
-          scanCount: 0,
           ...snippetEntity,
-          snippetMatchedRules: snippetEntity?.snippetMatchedRules?.map(e => e.id.toString()),
+          matchedRules: snippetEntity?.matchedRules?.id,
         };
 
   return (
@@ -95,12 +92,12 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   validate={{ required: true }}
                 />
               ) : null}
+              <ValidatedField label={translate('snipptorApp.snippet.hash')} id="snippet-hash" name="hash" data-cy="hash" type="text" />
               <ValidatedField
                 label={translate('snipptorApp.snippet.content')}
                 id="snippet-content"
                 name="content"
                 data-cy="content"
-                rows={10}
                 type="textarea"
                 validate={{
                   required: { value: true, message: translate('entity.validation.required') },
@@ -126,16 +123,13 @@ export const SnippetUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 name="scanCount"
                 data-cy="scanCount"
                 type="text"
-                value={0}
-                disabled
               />
               <ValidatedField
-                label={translate('snipptorApp.snippet.snippetMatchedRules')}
-                id="snippet-snippetMatchedRules"
-                data-cy="snippetMatchedRules"
+                id="snippet-matchedRules"
+                name="matchedRules"
+                data-cy="matchedRules"
+                label={translate('snipptorApp.snippet.matchedRules')}
                 type="select"
-                multiple
-                name="snippetMatchedRules"
               >
                 <option value="" key="0" />
                 {snippetMatchedRules

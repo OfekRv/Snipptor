@@ -1,13 +1,12 @@
 package snipptor.snipptor.snipptor.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A SnippetMatchedRules.
@@ -25,15 +24,10 @@ public class SnippetMatchedRules implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @ManyToMany(mappedBy = "snippetMatchedRules", cascade = CascadeType.ALL)
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = {"engine", "vulnerability", "snippetMatchedRules"}, allowSetters = true)
-    private Set<Rule> rules = new HashSet<>();
-
     @ManyToMany(mappedBy = "snippetMatchedRules")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = {"snippetMatchedRules"}, allowSetters = true)
-    private Set<Snippet> snippets = new HashSet<>();
+    @JsonIgnoreProperties(value = { "engine", "vulnerability", "snippetMatchedRules" }, allowSetters = true)
+    private Set<Rule> rules = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -78,37 +72,6 @@ public class SnippetMatchedRules implements Serializable {
     public SnippetMatchedRules removeRule(Rule rule) {
         this.rules.remove(rule);
         rule.getSnippetMatchedRules().remove(this);
-        return this;
-    }
-
-    public Set<Snippet> getSnippets() {
-        return this.snippets;
-    }
-
-    public void setSnippets(Set<Snippet> snippets) {
-        if (this.snippets != null) {
-            this.snippets.forEach(i -> i.removeSnippetMatchedRules(this));
-        }
-        if (snippets != null) {
-            snippets.forEach(i -> i.addSnippetMatchedRules(this));
-        }
-        this.snippets = snippets;
-    }
-
-    public SnippetMatchedRules snippets(Set<Snippet> snippets) {
-        this.setSnippets(snippets);
-        return this;
-    }
-
-    public SnippetMatchedRules addSnippet(Snippet snippet) {
-        this.snippets.add(snippet);
-        snippet.getSnippetMatchedRules().add(this);
-        return this;
-    }
-
-    public SnippetMatchedRules removeSnippet(Snippet snippet) {
-        this.snippets.remove(snippet);
-        snippet.getSnippetMatchedRules().remove(this);
         return this;
     }
 

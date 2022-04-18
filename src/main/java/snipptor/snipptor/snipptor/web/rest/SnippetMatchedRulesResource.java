@@ -33,6 +33,11 @@ public class SnippetMatchedRulesResource {
 
     private final Logger log = LoggerFactory.getLogger(SnippetMatchedRulesResource.class);
 
+    private static final String ENTITY_NAME = "snippetMatchedRules";
+
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     private final SnippetMatchedRulesRepository snippetMatchedRulesRepository;
 
     public SnippetMatchedRulesResource(SnippetMatchedRulesRepository snippetMatchedRulesRepository) {

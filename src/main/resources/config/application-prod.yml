@@ -34,7 +34,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/snipptor}
-    username: ${DATABASE_USER:postgres}
+    username: ${DATABASE_USER:snipptor}
     password: ${DATABASE_PASSWORD:Aa123456}
     hikari:
       poolName: Hikari
