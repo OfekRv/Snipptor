@@ -60,9 +60,17 @@ export const SnippetDetail = (props: RouteComponentProps<{ id: string }>) => {
           </dt>
           <dd>{snippetEntity.scanCount}</dd>
           <dt>
-            <Translate contentKey="snipptorApp.snippet.matchedRules">Matched Rules</Translate>
+            <span id="matches count">
+              Matched rules count
+            </span>
           </dt>
-          <dd>{snippetEntity.matchedRules ? snippetEntity.matchedRules.id : ''}</dd>
+          <dd>{snippetEntity.matchedRulesCount}</dd>
+          <dt>
+            <span id="matchesRulesNames">
+              Matched rules names
+            </span>
+          </dt>
+          <dd>{snippetEntity.matchedRulesNames}</dd>
         </dl>
         <Button tag={Link} to="/snippet" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

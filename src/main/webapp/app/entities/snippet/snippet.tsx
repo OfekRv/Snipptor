@@ -118,7 +118,10 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('scanCount')}>
                   <Translate contentKey="snipptorApp.snippet.scanCount">Scan Count</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
-                <th />
+                <th className="hand" onClick={sort('scanCount')}>Matches Count<FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('scanCount')}>Matches<FontAwesomeIcon icon="sort" />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -136,6 +139,8 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                     <Translate contentKey={`snipptorApp.SnippetClassification.${snippet.classification}`} />
                   </td>
                   <td>{snippet.scanCount}</td>
+                  <td>{snippet.matchedRulesCount}</td>
+                  <td>{snippet.matchedRulesNames}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${snippet.id}`} color="info" size="sm" data-cy="entityDetailsButton">
@@ -154,18 +159,6 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`${match.url}/${snippet.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
                         </span>
                       </Button>
                     </div>
