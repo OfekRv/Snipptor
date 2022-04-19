@@ -103,12 +103,6 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('id')}>
                   <Translate contentKey="snipptorApp.snippet.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
-                <th className="hand" onClick={sort('hash')}>
-                  <Translate contentKey="snipptorApp.snippet.hash">Hash</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('content')}>
-                  <Translate contentKey="snipptorApp.snippet.content">Content</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
                 <th className="hand" onClick={sort('url')}>
                   <Translate contentKey="snipptorApp.snippet.url">Url</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
@@ -118,9 +112,11 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                 <th className="hand" onClick={sort('scanCount')}>
                   <Translate contentKey="snipptorApp.snippet.scanCount">Scan Count</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
-                <th className="hand" onClick={sort('scanCount')}>Matches Count<FontAwesomeIcon icon="sort" />
+                <th className="hand">Matched rules Count
                 </th>
-                <th className="hand" onClick={sort('scanCount')}>Matches<FontAwesomeIcon icon="sort" />
+                <th className="hand">Matched rules
+                </th>
+                <th className="hand">Vulnerabilities
                 </th>
               </tr>
             </thead>
@@ -132,15 +128,14 @@ export const Snippet = (props: RouteComponentProps<{ url: string }>) => {
                       {snippet.id}
                     </Button>
                   </td>
-                  <td>{snippet.hash}</td>
-                  <td>{snippet.content}</td>
                   <td>{snippet.url}</td>
                   <td>
                     <Translate contentKey={`snipptorApp.SnippetClassification.${snippet.classification}`} />
                   </td>
                   <td>{snippet.scanCount}</td>
-                  <td>{snippet.matchedRulesCount}</td>
-                  <td>{snippet.matchedRulesNames}</td>
+                  <td>{snippet.matchedRules.rules.length}</td>
+                  <td>{snippet.matchedRules.rules.map(r=>r.name).join(", ")}</td>
+                  <td>{snippet.vulnerabilities.map(v=>v.name).join(", ")}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${snippet.id}`} color="info" size="sm" data-cy="entityDetailsButton">

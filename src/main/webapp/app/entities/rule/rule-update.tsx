@@ -133,7 +133,7 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
                 {vulnerabilities
                   ? vulnerabilities.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.name}
                       </option>
                     ))
                   : null}

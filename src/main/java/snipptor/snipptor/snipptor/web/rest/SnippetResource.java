@@ -236,7 +236,9 @@ public class SnippetResource {
                 new ScanSnippet(rawSnippet),
                 SnippetRulesScanResult.class);
         return result.getMatches().stream()
-            .map(r -> ruleRepository.findByName(r).get())
+            .map(r -> ruleRepository.findByName(r))
+            .filter(r-> r.isPresent())
+            .map(r-> r.get())
             .collect(Collectors.toSet());
     }
 

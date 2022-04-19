@@ -98,7 +98,7 @@ public class RuleResource {
         if (!ruleRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
-
+        uploadRule(rule);
         Rule result = ruleRepository.save(rule);
         return ResponseEntity
             .ok()

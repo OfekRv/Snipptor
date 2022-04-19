@@ -1,7 +1,5 @@
 package snipptor.snipptor.snipptor.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -52,11 +50,7 @@ public class Snippet implements Serializable {
 
     @Transient
     @JsonSerialize
-    private int matchedRulesCount;
-
-    @Transient
-    @JsonSerialize
-    private Collection<String> matchedRulesNames;
+    private Collection<Vulnerability> vulnerabilities;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -185,17 +179,12 @@ public class Snippet implements Serializable {
 
     @PostLoad
     private void onLoad() {
-        this.matchedRulesCount = matchedRules.getRules().size();
-        this.matchedRulesNames = matchedRules.getRules().stream()
-            .map(r -> r.getName())
-            .collect(Collectors.toList());
+        this.vulnerabilities = matchedRules.getRules().stream()
+            .map(r -> r.getVulnerability())
+            .collect(Collectors.toSet());
     }
 
-    public int getMatchedRulesCount() {
-        return matchedRulesCount;
-    }
-
-    public Collection<String> getMatchedRulesNames() {
-        return matchedRulesNames;
+    public Collection<Vulnerability> getVulnerabilities() {
+        return vulnerabilities;
     }
 }

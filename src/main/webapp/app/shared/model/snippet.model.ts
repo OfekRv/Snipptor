@@ -1,4 +1,5 @@
 import { ISnippetMatchedRules } from 'app/shared/model/snippet-matched-rules.model';
+import { IVulnerability } from 'app/shared/model/vulnerability.model';
 import { SnippetClassification } from 'app/shared/model/enumerations/snippet-classification.model';
 
 export interface ISnippet {
@@ -9,8 +10,7 @@ export interface ISnippet {
   classification?: SnippetClassification | null;
   scanCount?: number | null;
   matchedRules?: ISnippetMatchedRules | null;
-  matchedRulesCount?: number | null;
-  matchedRulesNames?: string[] | null;
+  vulnerabilities?: Array<IVulnerability> | null;
 }
 
 export const defaultValue: Readonly<ISnippet> = {};

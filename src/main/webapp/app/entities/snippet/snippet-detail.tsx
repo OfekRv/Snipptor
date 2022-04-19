@@ -64,13 +64,19 @@ export const SnippetDetail = (props: RouteComponentProps<{ id: string }>) => {
               Matched rules count
             </span>
           </dt>
-          <dd>{snippetEntity.matchedRulesCount}</dd>
+          <dd>{(snippetEntity.matchedRules)?snippetEntity.matchedRules.rules.length:0}</dd>
           <dt>
-            <span id="matchesRulesNames">
-              Matched rules names
+            <span id="matchesRules">
+              Matched rules
             </span>
           </dt>
-          <dd>{snippetEntity.matchedRulesNames}</dd>
+          <dd>{(snippetEntity.matchedRules && snippetEntity.matchedRules.rules.length > 0)?(snippetEntity.matchedRules.rules.map(r=>r.name).join(", ")):"none"}</dd>
+          <dt>
+            <span id="vulnerabilities">
+              Vulnerabilities
+            </span>
+          </dt>
+          <dd>{(snippetEntity.vulnerabilities && snippetEntity.vulnerabilities.length > 0)?snippetEntity.vulnerabilities.map(v=>v.name).join(", "):"none"}</dd>
         </dl>
         <Button tag={Link} to="/snippet" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
