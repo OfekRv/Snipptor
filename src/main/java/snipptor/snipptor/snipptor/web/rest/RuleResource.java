@@ -65,8 +65,8 @@ public class RuleResource {
             throw new BadRequestAlertException("A new rule cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
+        rule.setSnippetMatchedRules(null);
         uploadRule(rule);
-
         Rule result = ruleRepository.save(rule);
         return ResponseEntity
             .created(new URI("/api/rules/" + result.getId()))

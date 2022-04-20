@@ -54,7 +54,6 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
     const entity = {
       ...ruleEntity,
       ...values,
-      snippetMatchedRules: mapIdList(values.snippetMatchedRules),
       engine: engines.find(it => it.id.toString() === values.engine.toString()),
       vulnerability: vulnerabilities.find(it => it.id.toString() === values.vulnerability.toString()),
     };
@@ -72,8 +71,7 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
       : {
           ...ruleEntity,
           engine: ruleEntity?.engine?.id,
-          vulnerability: ruleEntity?.vulnerability?.id,
-          snippetMatchedRules: ruleEntity?.snippetMatchedRules?.map(e => e.id.toString()),
+          vulnerability: ruleEntity?.vulnerability?.id
         };
 
   return (
@@ -134,23 +132,6 @@ export const RuleUpdate = (props: RouteComponentProps<{ id: string }>) => {
                   ? vulnerabilities.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
                         {otherEntity.name}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <ValidatedField
-                label={translate('snipptorApp.rule.snippetMatchedRules')}
-                id="rule-snippetMatchedRules"
-                data-cy="snippetMatchedRules"
-                type="select"
-                multiple
-                name="snippetMatchedRules"
-              >
-                <option value="" key="0" />
-                {snippetMatchedRules
-                  ? snippetMatchedRules.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
                       </option>
                     ))
                   : null}
