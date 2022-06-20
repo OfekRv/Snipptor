@@ -6,15 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import snipptor.snipptor.snipptor.contracts.ScanSnippet;
-import snipptor.snipptor.snipptor.contracts.SnippetRulesScanResult;
-import snipptor.snipptor.snipptor.domain.Engine;
+import snipptor.snipptor.snipptor.bl.ScannerBl;
 import snipptor.snipptor.snipptor.domain.Rule;
 import snipptor.snipptor.snipptor.domain.Snippet;
 import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
@@ -46,7 +45,6 @@ import static snipptor.snipptor.snipptor.domain.enumeration.SnippetClassificatio
 @RequestMapping("/api")
 @Transactional
 public class SnippetResource {
-
     public static final long FIRST_SCAN = 1l;
     private final Logger log = LoggerFactory.getLogger(SnippetResource.class);
 
@@ -57,16 +55,18 @@ public class SnippetResource {
 
     private RestTemplate restClient;
 
+    private final ScannerBl scannerBl;
     private final SnippetRepository snippetRepository;
     private final RuleRepository ruleRepository;
     private final EngineRepository engineRepository;
     private final SnippetMatchedRulesRepository MatchedRulesRepository;
 
-    public SnippetResource(SnippetRepository snippetRepository, RuleRepository ruleRepository, EngineRepository engineRepository, SnippetMatchedRulesRepository matchedRulesRepository) {
+    public SnippetResource(ScannerBl scannerBl, SnippetRepository snippetRepository, RuleRepository ruleRepository, EngineRepository engineRepository, SnippetMatchedRulesRepository matchedRulesRepository) {
+        this.scannerBl = scannerBl;
         this.snippetRepository = snippetRepository;
         this.ruleRepository = ruleRepository;
         this.engineRepository = engineRepository;
-        MatchedRulesRepository = matchedRulesRepository;
+        this.MatchedRulesRepository = matchedRulesRepository;
 
         restClient = new RestTemplate();
     }
@@ -98,7 +98,7 @@ public class SnippetResource {
 
             String content = snippet.getContent();
             Set<Rule> matchedRules = engineRepository.findAll().stream()
-                .map(e -> scanSnippet(e, content))
+                .map(e -> scannerBl.scanSnippet(e, content))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
             matched.setRules(matchedRules);
@@ -233,16 +233,13 @@ public class SnippetResource {
         return ResponseUtil.wrapOrNotFound(snippet);
     }
 
-    private Collection<Rule> scanSnippet(Engine engine, String rawSnippet) {
-        SnippetRulesScanResult result =
-            restClient.postForObject(engine.getUrl() + "/scan",
-                new ScanSnippet(rawSnippet),
-                SnippetRulesScanResult.class);
-        return result.getMatches().stream()
-            .map(r -> ruleRepository.findByName(r))
-            .filter(r -> r.isPresent())
-            .map(r -> r.get())
-            .collect(Collectors.toSet());
+    /**
+     * {@code POST  /snippets/actions/retro-scan} : Scans all the snippets with all the current rules.
+     */
+    @PostMapping("/snippets/actions/retro-scan")
+    public ResponseEntity<Void> retroScan() throws InterruptedException {
+        scannerBl.retroScanSnippets();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     private String calculateHashFromContent(String content) {
@@ -255,6 +252,5 @@ public class SnippetResource {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
