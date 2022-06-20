@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class SnippetResource {
 
+    public static final long FIRST_SCAN = 1l;
     private final Logger log = LoggerFactory.getLogger(SnippetResource.class);
 
     private static final String ENTITY_NAME = "snippet";
@@ -88,10 +89,9 @@ public class SnippetResource {
         if (alreadyExistSnippet.isPresent()) {
             snippet = alreadyExistSnippet.get();
             snippet.setScanCount(snippet.getScanCount() + 1);
-            matched = snippet.getMatchedRules();
         } else {
             snippet.setHash(snippetHash);
-            snippet.setScanCount(1l);
+            snippet.setScanCount(FIRST_SCAN);
             matched = new SnippetMatchedRules();
 
             String content = snippet.getContent();
@@ -104,6 +104,7 @@ public class SnippetResource {
         }
 
         Snippet result = snippetRepository.save(snippet);
+        System.out.println(result.getVulnerabilities());
         return ResponseEntity
             .created(new URI("/api/snippets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

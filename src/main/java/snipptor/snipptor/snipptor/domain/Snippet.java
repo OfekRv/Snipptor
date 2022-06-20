@@ -178,6 +178,7 @@ public class Snippet implements Serializable {
     }
 
     @PostLoad
+    @PrePersist
     private void onLoad() {
         this.vulnerabilities = matchedRules.getRules().stream()
             .map(r -> r.getVulnerability())
