@@ -37,6 +37,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static snipptor.snipptor.snipptor.domain.enumeration.SnippetClassification.classifyByRules;
+
 /**
  * REST controller for managing {@link snipptor.snipptor.snipptor.domain.Snippet}.
  */
@@ -101,10 +103,10 @@ public class SnippetResource {
                 .collect(Collectors.toSet());
             matched.setRules(matchedRules);
             snippet.setMatchedRules(matched);
+            snippet.setClassification(classifyByRules(matchedRules));
         }
 
         Snippet result = snippetRepository.save(snippet);
-        System.out.println(result.getVulnerabilities());
         return ResponseEntity
             .created(new URI("/api/snippets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -238,8 +240,8 @@ public class SnippetResource {
                 SnippetRulesScanResult.class);
         return result.getMatches().stream()
             .map(r -> ruleRepository.findByName(r))
-            .filter(r-> r.isPresent())
-            .map(r-> r.get())
+            .filter(r -> r.isPresent())
+            .map(r -> r.get())
             .collect(Collectors.toSet());
     }
 

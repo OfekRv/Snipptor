@@ -1,5 +1,10 @@
 package snipptor.snipptor.snipptor.domain.enumeration;
 
+import snipptor.snipptor.snipptor.domain.Rule;
+import snipptor.snipptor.snipptor.domain.SnippetMatchedRules;
+
+import java.util.Collection;
+
 /**
  * The SnippetClassification enumeration.
  */
@@ -17,5 +22,9 @@ public enum SnippetClassification {
 
     public String getValue() {
         return value;
+    }
+
+    public static SnippetClassification classifyByRules(Collection<Rule> rules) {
+        return rules.isEmpty() ? UNKNOWN : VULNERABLE;
     }
 }
